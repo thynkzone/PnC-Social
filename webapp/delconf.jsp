@@ -1,0 +1,58 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page import="com.thynkzone.jsp.*" %>
+
+<!DOCTYPE html>
+	<html lang = "en">
+	<head>
+	<link rel="icon" href="icon/favicon.ico" type="image/x-icon">
+	<title>P&C</title>
+	<meta charset = "UTF-8">
+	<meta name="description" content="P&C (People and Culture) is a workplace social network for employees to share experiences, updates, memes, and insights about their jobs and organizational life."/>
+<meta name="keywords" content="People and Culture, workplace social network, employee community, company culture, office memes, job updates, coworker engagement, P&C app, organizational culture, share work life, employee stories"/>
+	<meta name="author" content="Md. Mazidul Haque Farabi"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	</head>
+
+	<%
+	
+	try
+{
+		
+	String ix = db.userid(request);
+	String tester = ix.concat("a");
+
+	String[] fetches = db.nameico(ix);
+	String pname = fetches[0];
+	String psmall = "img/".concat(fetches[1]);
+	
+	String token = request.getParameter("csrf");
+	if (db.verifycsrftoken(token)) {
+
+	// String pw
+	// HIDDEN FOR DEMO
+	
+	if (db.del(ix, pw) == 1) {
+		response.sendRedirect("index.jsp");
+		return;
+	}
+	else if (db.del(ix, pw) == 0) {
+		session.setAttribute("msg", "Wrong Password Entered");
+		response.sendRedirect("settings.jsp");
+		return;
+	}
+	
+} else {
+	//invalid csrf
+	response.sendRedirect("index.jsp");
+	session.setAttribute("msg", "Attempt unsuccessful");
+	return;
+}
+
+			
+		} catch(Exception ex) {
+			System.out.print(ex+"at delconf.jsp");
+			response.sendRedirect("index.jsp");
+		}
+	%>
+
+	</html>

@@ -1,0 +1,85 @@
+# Security and Configuration Files
+WEB-INF/secured/
+*.txt
+*.properties
+*.config
+*.env
+
+# Database Configuration
+**/eu.txt
+**/ep.txt
+**/emp.txt
+**/q.txt
+**/x.txt
+**/y.txt
+**/z.txt
+
+# Build and Compiled Files
+*.class
+*.jar
+*.war
+*.ear
+target/
+build/
+out/
+bin/
+
+# IDE and Editor Files
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.metadata/
+
+# Logs and Temporary Files
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# OS Generated Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# User Uploads and Images
+webapp/img/
+/usr/local/img/
+uploads/
+user-uploads/
+
+# Session and Cache Files
+*.session
+*.cache
+
+# Backup Files
+*.bak
+*.backup
+*.old
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# SSL Certificates
+*.pem
+*.key
+*.crt
+*.p12
+
+# Application Server Files
+apache-tomcat/
+tomcat/
+glassfish/
+wildfly/ 
