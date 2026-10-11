@@ -95,6 +95,26 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.ok("Post deleted successfully.", null));
     }
 
+    @PostMapping("/{postId}/report")
+    public ResponseEntity<ApiResponse<Void>> reportPost(
+            @PathVariable String postId,
+            @RequestBody(required = false) Map<String, Object> payload,
+            HttpServletRequest request) {
+        String currentUserId = authService.getCurrentUserId(request);
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Authentication required to report a post"));
+        }
+        int reportType = 1;
+        if (payload != null && payload.containsKey("reportType")) {
+            try {
+                reportType = Integer.parseInt(payload.get("reportType").toString());
+            } catch (Exception ignored) {}
+        }
+        postService.reportPost(postId, currentUserId, reportType);
+        return ResponseEntity.ok(ApiResponse.ok("Thank you for your report. It has been submitted for moderation review.", null));
+    }
+
     @PostMapping("/{postId}/react")
     public ResponseEntity<ApiResponse<Void>> reactToPost(
             @PathVariable String postId,

@@ -18,4 +18,6 @@ public interface UserService {
     List<UserProfileDto> searchUsers(String query, int page, int size);
 
     List<UserProfileDto> getSuggestedUsers(String currentUserId, int limit);
+
+    void reportUser(String targetUserId, String reporterId, int reportType);
 }

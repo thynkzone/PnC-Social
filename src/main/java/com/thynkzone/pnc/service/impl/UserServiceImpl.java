@@ -20,13 +20,16 @@ public class UserServiceImpl implements UserService {
     private final UserProfileRepository userProfileRepository;
     private final UserRelationshipRepository relationshipRepository;
     private final PostRepository postRepository;
+    private final com.thynkzone.pnc.repository.ProfileReportRepository profileReportRepository;
 
     public UserServiceImpl(UserProfileRepository userProfileRepository,
                            UserRelationshipRepository relationshipRepository,
-                           PostRepository postRepository) {
+                           PostRepository postRepository,
+                           com.thynkzone.pnc.repository.ProfileReportRepository profileReportRepository) {
         this.userProfileRepository = userProfileRepository;
         this.relationshipRepository = relationshipRepository;
         this.postRepository = postRepository;
+        this.profileReportRepository = profileReportRepository;
     }
 
     @Override
@@ -162,5 +165,14 @@ public class UserServiceImpl implements UserService {
                 false,
                 false
         );
+    }
+
+    @Override
+    @Transactional
+    public void reportUser(String targetUserId, String reporterId, int reportType) {
+        UserProfile reporter = userProfileRepository.findById(reporterId).orElse(null);
+        String reporterName = reporter != null ? reporter.getFullName() : "Anonymous User";
+        com.thynkzone.pnc.entity.ProfileReport report = new com.thynkzone.pnc.entity.ProfileReport(reporterId, reporterName, targetUserId, reportType);
+        profileReportRepository.save(report);
     }
 }

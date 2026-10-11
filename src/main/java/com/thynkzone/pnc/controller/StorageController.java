@@ -8,11 +8,16 @@ import com.thynkzone.pnc.service.StorageService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/storage")
@@ -38,5 +43,24 @@ public class StorageController {
 
         PresignedUploadResponse response = storageService.createPresignedUploadUrl(currentUserId, request);
         return ResponseEntity.ok(ApiResponse.ok("Presigned upload URL generated successfully.", response));
+    }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Map<String, String>>> uploadFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "folder", defaultValue = "posts") String folder,
+            HttpServletRequest httpRequest) {
+        String currentUserId = authService.getCurrentUserId(httpRequest);
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Authentication required to upload file"));
+        }
+
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Uploaded file cannot be empty"));
+        }
+
+        Map<String, String> result = storageService.uploadFile(currentUserId, file, folder);
+        return ResponseEntity.ok(ApiResponse.ok("File uploaded successfully", result));
     }
 }

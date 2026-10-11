@@ -357,8 +357,16 @@ const API = {
         return this.post('/posts', { content, postType, privacy, imageUrl });
     },
 
-    updatePost(postId, content, postType, privacy) {
-        return this.put(`/posts/${postId}`, { content, postType, privacy });
+    updatePost(postId, content, postType = 3, privacy = 4, imageUrl = null) {
+        return this.put(`/posts/${postId}`, { content, postType, privacy, imageUrl });
+    },
+
+    reportPost(postId, reportType = 1) {
+        return this.post(`/posts/${postId}/report`, { reportType });
+    },
+
+    reportUser(userId, reportType = 1) {
+        return this.post(`/users/${userId}/report`, { reportType });
     },
 
     deletePost(postId) {
@@ -410,33 +418,66 @@ const API = {
         return this.put('/users/background-picture', { imageUrl });
     },
 
-    // Storage & Direct Cloudflare R2 Uploads
+    // Storage & Cloudflare R2 Uploads (Dual-path: Backend upload + Presigned direct PUT)
     async uploadImage(file, folder = 'posts') {
-        const presignRes = await this.post('/storage/presigned-upload', {
-            filename: file.name,
-            contentType: file.type || 'image/jpeg',
-            folder: folder
-        });
+        if (!file) throw new Error('No file provided for upload.');
 
-        if (!presignRes || !presignRes.data || !presignRes.data.uploadUrl) {
-            throw new Error(presignRes?.message || 'Could not obtain upload authorization.');
+        // Method 1: Direct backend multipart upload (CORS-free, works reliably across all mobile WebViews & browsers)
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', folder);
+
+            const response = await fetch('/api/storage/upload', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const resData = await response.json().catch(() => null);
+                if (resData && resData.success && resData.data) {
+                    const data = resData.data;
+                    const resolvedUrl = data.publicUrl || data.downloadUrl;
+                    return {
+                        publicUrl: resolvedUrl,
+                        downloadUrl: resolvedUrl,
+                        objectKey: data.objectKey || ''
+                    };
+                }
+            }
+        } catch (uploadErr) {
+            console.warn('Backend upload attempt failed, trying presigned direct PUT...', uploadErr);
         }
 
-        const { uploadUrl, publicUrl, objectKey } = presignRes.data;
+        // Method 2: Direct-to-R2 presigned PUT fallback
+        try {
+            const presignRes = await this.post('/storage/presigned-upload', {
+                filename: file.name,
+                contentType: file.type || 'image/jpeg',
+                folder: folder
+            });
 
-        const uploadRes = await fetch(uploadUrl, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': file.type || 'image/jpeg'
-            },
-            body: file
-        });
+            if (presignRes && presignRes.data && presignRes.data.uploadUrl) {
+                const { uploadUrl, publicUrl, objectKey } = presignRes.data;
 
-        if (!uploadRes.ok) {
-            throw new Error(`Direct storage upload failed (HTTP ${uploadRes.status})`);
+                const uploadRes = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': file.type || 'image/jpeg'
+                    },
+                    body: file
+                });
+
+                if (uploadRes.ok) {
+                    return { publicUrl, downloadUrl: publicUrl, objectKey };
+                }
+            }
+        } catch (presignErr) {
+            console.error('Presigned direct upload failed:', presignErr);
         }
 
-        return { publicUrl, downloadUrl: publicUrl, objectKey };
+        throw new Error('Image upload failed. Please verify your connection or image format.');
     },
 
     // Advertisements
@@ -506,6 +547,25 @@ const API = {
 if (typeof window !== 'undefined') {
     window.API = API;
     window.ColdStartUI = ColdStartUI;
+    if (typeof API.uploadImage === 'function') {
+        window.uploadImage = API.uploadImage.bind(API);
+    }
+
+    // Auto-detect Android, WebView or Mobile and set status-bar clearance
+    (function initMobileStatusBar() {
+        try {
+            const ua = navigator.userAgent || '';
+            const isAndroid = /Android/i.test(ua);
+            const isMobile = isAndroid || /iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            const isWebView = /(wv|WebView|Version\/[0-9.]+)/i.test(ua) || window.matchMedia('(display-mode: standalone)').matches;
+
+            if (isAndroid || isWebView || isMobile) {
+                document.documentElement.classList.add('mobile-app-view');
+                document.documentElement.style.setProperty('--app-status-bar', '36px');
+            }
+        } catch (_) {}
+    })();
+
     window.addEventListener('DOMContentLoaded', () => {
         API.warmup();
     });

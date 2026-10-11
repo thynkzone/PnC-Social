@@ -102,7 +102,7 @@ public class DataSeeder implements CommandLineRunner {
             profile.setRating(uData.rating());
             profile.setRole("USER");
             profile.setProfilePic("prof.png");
-            profile.setBackgroundPic("prof.png");
+            profile.setBackgroundPic(null);
             profile.setCreatedAt(user.getCreatedAt());
             savedProfiles.add(profile);
         }

@@ -31,7 +31,8 @@ public class LegacyViewController {
         return "forward:/profile.html";
     }
 
-    @GetMapping({"/settings", "/settings.jsp"})
+    @GetMapping({"/settings", "/settings.jsp", "/update-profile-picture", "/update-profile-picture.jsp", 
+                 "/update-background-picture", "/update-background-picture.jsp", "/personal.jsp"})
     public String settings() {
         return "forward:/settings.html";
     }

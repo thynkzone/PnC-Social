@@ -35,6 +35,8 @@ public interface PostService {
     void hideAuthor(String authorId, String actorId);
 
     void unhideAll(String actorId);
-
+ 
     List<CommentDto> getPostComments(String postId, String currentUserId);
+
+    void reportPost(String postId, String reporterId, int reportType);
 }

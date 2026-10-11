@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/modern-ui.css">
+    <link rel="stylesheet" href="/css/modern-ui.css?v=20261012.4">
     <style>
         .profile-container {
             max-width: 900px;
@@ -367,7 +367,7 @@
 
     </div>
 
-    <script src="/js/api.js?v=2.2"></script>
+    <script src="/js/api.js?v=20261012.4"></script>
     <script>
         let currentAuthUser = null;
         let viewedUserId = null;
@@ -405,7 +405,7 @@
                 document.getElementById('menuAvatar').src = pic;
             }
             document.getElementById('menuName').innerText = user.fullName || 'User';
-            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} • ${user.rating || 0} pts`;
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} â€¢ ${user.rating || 0} pts`;
             document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
         }
 
@@ -434,7 +434,7 @@
                 const p = res.data;
 
                 document.getElementById('profileName').innerText = p.fullName || 'User';
-                document.getElementById('profileRank').innerText = `${p.rank || 'Novice'} • ${p.rating || 0} Points`;
+                document.getElementById('profileRank').innerText = `${p.rank || 'Novice'} â€¢ ${p.rating || 0} Points`;
                 document.getElementById('profileAbout').innerText = p.about || 'No bio specified yet.';
                 document.getElementById('profilePlace').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${p.place || 'Remote'}`;
                 document.getElementById('profileCountry').innerHTML = `<i class="fa-solid fa-globe"></i> ${p.country || 'Global'}`;
@@ -505,7 +505,11 @@
             } else {
                 container.innerHTML += `<button class="li-btn-secondary" onclick="follow()"><i class="fa-solid fa-plus"></i> Follow</button>`;
             }
+
+            container.innerHTML += `<button class="li-btn-secondary" style="padding: 6px 12px; color: var(--li-text-secondary);" onclick="openReportProfileModal('${viewedUserId}')" title="Report this profile"><i class="fa-regular fa-flag"></i></button>`;
         }
+
+        const profilePostsCache = new Map();
 
         async function loadUserPosts(userId) {
             try {
@@ -519,14 +523,40 @@
                 }
 
                 res.data.content.forEach(post => {
+                    profilePostsCache.set(post.id, post);
                     const item = document.createElement('div');
                     item.className = 'activity-item';
+                    item.id = `post-${post.id}`;
+                    const isOwner = Boolean(currentAuthUser && currentAuthUser.id === post.authorId);
+                    const badgeText = post.postType === 1 ? 'Meme' : (post.postType === 2 ? 'Fact' : 'Update');
+
                     item.innerHTML = `
-                        <div class="activity-meta">
-                            <i class="fa-regular fa-clock"></i> ${post.timeAgo || 'Recently'}
-                            ${post.isFact ? '<span style="background: rgba(16,185,129,0.15); color: #10b981; padding: 1px 6px; border-radius: 8px; font-weight: 600; font-size: 11px;">Fact</span>' : ''}
+                        <div class="activity-meta" style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <i class="fa-regular fa-clock"></i> ${post.timeAgo || 'Recently'}
+                                <span class="li-badge-pill" id="post-badge-${post.id}" style="margin-left: 6px;">${badgeText}</span>
+                            </div>
+                            <div class="li-post-menu-container">
+                                <button class="li-post-menu-btn" onclick="togglePostMenu('${post.id}', event)" title="Options">
+                                    <i class="fa-solid fa-ellipsis"></i>
+                                </button>
+                                <div class="li-post-menu-dropdown" id="post-menu-${post.id}">
+                                    ${isOwner ? `
+                                        <button onclick="openEditPostModal('${post.id}', event)">
+                                            <i class="fa-regular fa-pen-to-square" style="color: var(--li-primary);"></i> Edit post
+                                        </button>
+                                        <button onclick="deletePost('${post.id}')" style="color: var(--li-danger);">
+                                            <i class="fa-regular fa-trash-can"></i> Delete post
+                                        </button>
+                                    ` : `
+                                        <button onclick="openReportPostModal('${post.id}', event)">
+                                            <i class="fa-regular fa-flag" style="color: #f59e0b;"></i> Report post
+                                        </button>
+                                    `}
+                                </div>
+                            </div>
                         </div>
-                        <div class="activity-body">${post.content}</div>
+                        <div class="activity-body">${escapeHtml(post.content)}</div>
                         ${post.imageUrl ? `<img src="${post.imageUrl}" class="activity-media" alt="Post media">` : ''}
                         <div class="activity-reactions">
                             <span><i class="fa-solid fa-thumbs-up" style="color: var(--li-primary);"></i> ${post.likesCount || 0} Likes</span>
@@ -630,17 +660,42 @@
             loadProfile(viewedUserId);
         }
 
+        async function safeUploadImage(file, folder) {
+            if (window.API && typeof window.API.uploadImage === 'function') {
+                return await window.API.uploadImage(file, folder);
+            }
+            if (typeof window.uploadImage === 'function') {
+                return await window.uploadImage(file, folder);
+            }
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', folder);
+            const res = await fetch('/api/storage/upload', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.success && data.data) {
+                    return data.data;
+                }
+            }
+            throw new Error('Image upload failed. Please refresh the page.');
+        }
+
         async function handleAvatarUpload(event) {
             const file = event.target.files && event.target.files[0];
             if (!file) return;
             try {
                 showToast('Uploading profile picture...');
-                const uploadRes = await API.uploadImage(file, 'profiles');
-                if (!uploadRes || !uploadRes.downloadUrl) {
+                const uploadRes = await safeUploadImage(file, 'profiles');
+                const imgUrl = uploadRes ? (uploadRes.downloadUrl || uploadRes.publicUrl) : null;
+                if (!imgUrl) {
                     throw new Error('Upload failed: No image URL returned');
                 }
-                await API.updateProfilePicture(uploadRes.downloadUrl);
-                document.getElementById('profileAvatar').src = uploadRes.downloadUrl;
+                await API.updateProfilePicture(imgUrl);
+                document.getElementById('profileAvatar').src = imgUrl;
                 showToast('Profile picture updated!');
             } catch (err) {
                 showToast(err.message || 'Failed to upload profile picture', true);
@@ -654,12 +709,15 @@
             if (!file) return;
             try {
                 showToast('Uploading cover photo...');
-                const uploadRes = await API.uploadImage(file, 'covers');
-                if (!uploadRes || !uploadRes.downloadUrl) {
+                const uploadRes = await safeUploadImage(file, 'covers');
+                const imgUrl = uploadRes ? (uploadRes.downloadUrl || uploadRes.publicUrl) : null;
+                if (!imgUrl) {
                     throw new Error('Upload failed: No image URL returned');
                 }
-                await API.updateBackgroundPicture(uploadRes.downloadUrl);
-                document.getElementById('coverImg').src = uploadRes.downloadUrl;
+                await API.updateBackgroundPicture(imgUrl);
+                const coverImg = document.getElementById('coverImg');
+                coverImg.src = imgUrl;
+                coverImg.style.display = 'block';
                 showToast('Cover photo updated!');
             } catch (err) {
                 showToast(err.message || 'Failed to upload cover photo', true);
@@ -667,6 +725,318 @@
                 event.target.value = '';
             }
         }
+
+        function togglePostMenu(postId, e) {
+            if (e) e.stopPropagation();
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => {
+                if (m.id !== `post-menu-${postId}`) m.classList.remove('show');
+            });
+            const menu = document.getElementById(`post-menu-${postId}`);
+            if (menu) menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+        });
+
+        let editPostCurrentImageUrl = null;
+
+        function openEditPostModal(postId, e) {
+            if (e) e.stopPropagation();
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+            const post = profilePostsCache.get(postId);
+            if (!post) return;
+
+            document.getElementById('editPostId').value = post.id;
+            document.getElementById('editPostContentTextarea').value = post.content || '';
+            document.getElementById('editPostTypeSelect').value = post.postType || 3;
+            document.getElementById('editPostPrivacySelect').value = post.privacy || 4;
+
+            const pic = post.authorPic ? (post.authorPic.startsWith('http') ? post.authorPic : `/images/${post.authorPic}`) : '/images/prof.png';
+            document.getElementById('editPostAuthorAvatar').src = pic;
+            document.getElementById('editPostAuthorName').innerText = post.authorFullName || 'You';
+
+            editPostCurrentImageUrl = post.imageUrl || null;
+            const imgPreviewBox = document.getElementById('editPostImagePreviewBox');
+            const imgPreview = document.getElementById('editPostImagePreview');
+            if (editPostCurrentImageUrl) {
+                imgPreview.src = editPostCurrentImageUrl;
+                imgPreviewBox.style.display = 'block';
+            } else {
+                imgPreviewBox.style.display = 'none';
+            }
+
+            document.getElementById('editPostModal').classList.add('show');
+        }
+
+        function closeEditPostModal() {
+            document.getElementById('editPostModal').classList.remove('show');
+        }
+
+        function removeEditPostImage() {
+            editPostCurrentImageUrl = '';
+            document.getElementById('editPostImagePreviewBox').style.display = 'none';
+        }
+
+        async function savePostEdit() {
+            const postId = document.getElementById('editPostId').value;
+            const content = document.getElementById('editPostContentTextarea').value.trim();
+            const postType = parseInt(document.getElementById('editPostTypeSelect').value);
+            const privacy = parseInt(document.getElementById('editPostPrivacySelect').value);
+
+            if (!content) {
+                showToast('Post content cannot be empty.', true);
+                return;
+            }
+
+            const btn = document.getElementById('savePostEditBtn');
+            btn.disabled = true;
+            btn.innerText = 'Saving...';
+
+            try {
+                const res = await API.updatePost(postId, content, postType, privacy, editPostCurrentImageUrl);
+                const updated = res.data;
+                profilePostsCache.set(postId, updated);
+
+                // Update activity item DOM
+                const postCard = document.getElementById(`post-${postId}`);
+                if (postCard) {
+                    const contentEl = postCard.querySelector('.activity-body');
+                    if (contentEl) contentEl.innerText = updated.content;
+
+                    const badgeEl = document.getElementById(`post-badge-${postId}`);
+                    if (badgeEl) {
+                        badgeEl.innerText = updated.postType === 1 ? 'Meme' : (updated.postType === 2 ? 'Fact' : 'Update');
+                    }
+
+                    let mediaEl = postCard.querySelector('.activity-media');
+                    if (updated.imageUrl) {
+                        if (mediaEl) {
+                            mediaEl.src = updated.imageUrl;
+                        } else {
+                            const newImg = document.createElement('img');
+                            newImg.className = 'activity-media';
+                            newImg.src = updated.imageUrl;
+                            newImg.alt = 'Post media';
+                            contentEl.after(newImg);
+                        }
+                    } else if (mediaEl) {
+                        mediaEl.remove();
+                    }
+                }
+
+                closeEditPostModal();
+                showToast('Post updated successfully!');
+            } catch (err) {
+                showToast(err.message || 'Failed to update post.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Save changes';
+            }
+        }
+
+        async function deletePost(postId) {
+            if (!confirm('Are you sure you want to delete this post?')) return;
+            try {
+                await API.deletePost(postId);
+                document.getElementById(`post-${postId}`)?.remove();
+                showToast('Post removed.');
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        function openReportPostModal(postId, e) {
+            if (e) e.stopPropagation();
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+            document.getElementById('reportPostId').value = postId;
+            document.getElementById('reportPostModal').classList.add('show');
+        }
+
+        function closeReportPostModal() {
+            document.getElementById('reportPostModal').classList.remove('show');
+        }
+
+        async function submitPostReport() {
+            const postId = document.getElementById('reportPostId').value;
+            const selectedRadio = document.querySelector('input[name="postReportReason"]:checked');
+            const reportType = selectedRadio ? parseInt(selectedRadio.value) : 1;
+
+            const btn = document.getElementById('submitPostReportBtn');
+            btn.disabled = true;
+            btn.innerText = 'Submitting...';
+
+            try {
+                await API.reportPost(postId, reportType);
+                closeReportPostModal();
+                showToast('Thank you. Your report has been submitted for moderation review.');
+            } catch (err) {
+                showToast(err.message || 'Failed to report post.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Submit Report';
+            }
+        }
+
+        function openReportProfileModal(userId) {
+            document.getElementById('reportTargetUserId').value = userId;
+            document.getElementById('reportProfileModal').classList.add('show');
+        }
+
+        function closeReportProfileModal() {
+            document.getElementById('reportProfileModal').classList.remove('show');
+        }
+
+        async function submitProfileReport() {
+            const userId = document.getElementById('reportTargetUserId').value;
+            const selectedRadio = document.querySelector('input[name="profileReportReason"]:checked');
+            const reportType = selectedRadio ? parseInt(selectedRadio.value) : 1;
+
+            const btn = document.getElementById('submitProfileReportBtn');
+            btn.disabled = true;
+            btn.innerText = 'Submitting...';
+
+            try {
+                await API.reportUser(userId, reportType);
+                closeReportProfileModal();
+                showToast('Thank you. The report has been submitted for moderation review.');
+            } catch (err) {
+                showToast(err.message || 'Failed to submit report.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Submit Report';
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+            })[m]);
+        }
     </script>
+
+    <!-- Edit Post Modal -->
+    <div class="li-modal-overlay" id="editPostModal" onclick="if(event.target===this) closeEditPostModal()">
+        <div class="li-modal-card">
+            <div class="li-modal-header">
+                <h3 class="li-modal-title"><i class="fa-regular fa-pen-to-square" style="color: var(--li-primary); margin-right: 6px;"></i> Edit Post</h3>
+                <button type="button" class="li-modal-close-btn" onclick="closeEditPostModal()">&times;</button>
+            </div>
+            <div class="li-modal-body">
+                <input type="hidden" id="editPostId">
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 14px;">
+                    <img id="editPostAuthorAvatar" src="/images/prof.png" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div id="editPostAuthorName" style="font-weight: 700; font-size: 14px; color: #fff;">User</div>
+                        <div style="display: flex; gap: 8px; margin-top: 4px;">
+                            <select id="editPostTypeSelect" class="li-select" style="padding: 3px 8px; font-size: 11px;">
+                                <option value="3">ðŸ¢ Workplace Update</option>
+                                <option value="2">ðŸ’¡ Architectural Fact</option>
+                                <option value="1">ðŸ˜„ Tech Meme</option>
+                            </select>
+                            <select id="editPostPrivacySelect" class="li-select" style="padding: 3px 8px; font-size: 11px;">
+                                <option value="4">ðŸŒ Anyone (Public)</option>
+                                <option value="3">ðŸ‘¥ Co-workers &amp; Followers</option>
+                                <option value="2">ðŸ”’ Co-workers Only</option>
+                                <option value="1">ðŸ‘ï¸ Only Me</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <textarea id="editPostContentTextarea" class="li-composer-textarea" style="min-height: 120px;" placeholder="What would you like to edit?"></textarea>
+
+                <div id="editPostImagePreviewBox" style="display: none; position: relative; margin-top: 10px;">
+                    <img id="editPostImagePreview" style="max-height: 180px; width: 100%; object-fit: cover; border-radius: var(--li-radius-md); border: 1px solid var(--li-border);">
+                    <button type="button" onclick="removeEditPostImage()" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.8); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px;">&times;</button>
+                </div>
+            </div>
+            <div class="li-modal-footer">
+                <button type="button" class="li-btn-secondary" onclick="closeEditPostModal()">Cancel</button>
+                <button type="button" class="li-btn-primary" id="savePostEditBtn" onclick="savePostEdit()">Save changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Post Modal -->
+    <div class="li-modal-overlay" id="reportPostModal" onclick="if(event.target===this) closeReportPostModal()">
+        <div class="li-modal-card" style="max-width: 460px;">
+            <div class="li-modal-header">
+                <h3 class="li-modal-title"><i class="fa-regular fa-flag" style="color: #f59e0b; margin-right: 6px;"></i> Report Post</h3>
+                <button type="button" class="li-modal-close-btn" onclick="closeReportPostModal()">&times;</button>
+            </div>
+            <div class="li-modal-body">
+                <input type="hidden" id="reportPostId">
+                <p style="font-size: 13px; color: var(--li-text-secondary); margin-bottom: 14px;">
+                    Help keep our professional community safe and constructive. Select a reason:
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="postReportReason" value="1" checked style="accent-color: var(--li-primary);">
+                        <span><strong>Spam or promotional scam</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="postReportReason" value="2" style="accent-color: var(--li-primary);">
+                        <span><strong>Harassment, hate speech, or abuse</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="postReportReason" value="3" style="accent-color: var(--li-primary);">
+                        <span><strong>Misinformation or false claims</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="postReportReason" value="4" style="accent-color: var(--li-primary);">
+                        <span><strong>Inappropriate or offensive content</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="postReportReason" value="5" style="accent-color: var(--li-primary);">
+                        <span><strong>Other violation</strong></span>
+                    </label>
+                </div>
+            </div>
+            <div class="li-modal-footer">
+                <button type="button" class="li-btn-secondary" onclick="closeReportPostModal()">Cancel</button>
+                <button type="button" class="li-btn-primary" id="submitPostReportBtn" onclick="submitPostReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Profile Modal -->
+    <div class="li-modal-overlay" id="reportProfileModal" onclick="if(event.target===this) closeReportProfileModal()">
+        <div class="li-modal-card" style="max-width: 460px;">
+            <div class="li-modal-header">
+                <h3 class="li-modal-title"><i class="fa-regular fa-flag" style="color: #f59e0b; margin-right: 6px;"></i> Report Profile</h3>
+                <button type="button" class="li-modal-close-btn" onclick="closeReportProfileModal()">&times;</button>
+            </div>
+            <div class="li-modal-body">
+                <input type="hidden" id="reportTargetUserId">
+                <p style="font-size: 13px; color: var(--li-text-secondary); margin-bottom: 14px;">
+                    Help us maintain trust across the workplace network. What is the issue with this profile?
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="profileReportReason" value="1" checked style="accent-color: var(--li-primary);">
+                        <span><strong>Fake account or impersonation</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="profileReportReason" value="2" style="accent-color: var(--li-primary);">
+                        <span><strong>Harassment or inappropriate behavior</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="profileReportReason" value="3" style="accent-color: var(--li-primary);">
+                        <span><strong>Spam or misleading information</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="profileReportReason" value="4" style="accent-color: var(--li-primary);">
+                        <span><strong>Other policy violation</strong></span>
+                    </label>
+                </div>
+            </div>
+            <div class="li-modal-footer">
+                <button type="button" class="li-btn-secondary" onclick="closeReportProfileModal()">Cancel</button>
+                <button type="button" class="li-btn-primary" id="submitProfileReportBtn" onclick="submitProfileReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

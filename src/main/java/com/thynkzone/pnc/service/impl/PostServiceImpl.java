@@ -33,15 +33,18 @@ public class PostServiceImpl implements PostService {
     private final NotificationRepository notificationRepository;
     private final UserProfileRepository userProfileRepository;
     private final UserRelationshipRepository relationshipRepository;
+    private final com.thynkzone.pnc.repository.ReportRepository reportRepository;
 
     public PostServiceImpl(PostRepository postRepository,
                            NotificationRepository notificationRepository,
                            UserProfileRepository userProfileRepository,
-                           UserRelationshipRepository relationshipRepository) {
+                           UserRelationshipRepository relationshipRepository,
+                           com.thynkzone.pnc.repository.ReportRepository reportRepository) {
         this.postRepository = postRepository;
         this.notificationRepository = notificationRepository;
         this.userProfileRepository = userProfileRepository;
         this.relationshipRepository = relationshipRepository;
+        this.reportRepository = reportRepository;
     }
 
     @Override
@@ -80,8 +83,12 @@ public class PostServiceImpl implements PostService {
         }
 
         post.setContent(request.content());
-        post.setPostType(request.postType());
-        post.setPrivacy(request.privacy());
+        if (request.postType() != 0) post.setPostType(request.postType());
+        if (request.privacy() != 0) post.setPrivacy(request.privacy());
+        if (request.imageUrl() != null) {
+            post.setImageUrl(request.imageUrl().isBlank() ? null : request.imageUrl());
+        }
+        post.setUpdatedAt(LocalDateTime.now());
 
         Post saved = postRepository.save(post);
         UserProfile profile = userProfileRepository.findById(authorId).orElse(null);
@@ -361,5 +368,16 @@ public class PostServiceImpl implements PostService {
         long days = hours / 24;
         if (days < 30) return days + "d ago";
         return (days / 30) + "mo ago";
+    }
+
+    @Override
+    @Transactional
+    public void reportPost(String postId, String reporterId, int reportType) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Post not found: " + postId));
+        UserProfile reporter = userProfileRepository.findById(reporterId).orElse(null);
+        String reporterName = reporter != null ? reporter.getFullName() : "Anonymous User";
+        com.thynkzone.pnc.entity.Report report = new com.thynkzone.pnc.entity.Report(reporterId, reporterName, postId, post.getAuthorId(), reportType);
+        reportRepository.save(report);
     }
 }

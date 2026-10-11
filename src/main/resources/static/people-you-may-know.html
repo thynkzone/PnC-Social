@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/modern-ui.css">
+    <link rel="stylesheet" href="/css/modern-ui.css?v=20261012.4">
     <style>
         .pymk-container {
             max-width: 960px;
@@ -41,12 +41,15 @@
             height: 60px;
             background-color: #0a66c2 !important; /* Authentic solid blue default */
             position: relative;
+            z-index: 1;
         }
 
         .pymk-avatar-wrap {
             margin-top: -36px;
             margin-bottom: 8px;
             display: inline-block;
+            position: relative;
+            z-index: 5;
         }
 
         .pymk-avatar {
@@ -56,6 +59,11 @@
             object-fit: cover;
             border: 3px solid var(--li-bg-surface);
             background: var(--li-bg-surface);
+            position: relative;
+            z-index: 6;
+            display: block;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.35);
         }
 
         .pymk-info {
@@ -195,7 +203,7 @@
 
     </div>
 
-    <script src="/js/api.js?v=2.2"></script>
+    <script src="/js/api.js?v=20261012.4"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {

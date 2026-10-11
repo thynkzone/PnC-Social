@@ -98,4 +98,24 @@ public class UserController {
         userService.updateBackgroundPicture(currentUserId, imageUrl);
         return ResponseEntity.ok(ApiResponse.ok("Background picture updated successfully.", null));
     }
+
+    @PostMapping("/{userId}/report")
+    public ResponseEntity<ApiResponse<Void>> reportUser(
+            @PathVariable String userId,
+            @RequestBody(required = false) java.util.Map<String, Object> payload,
+            HttpServletRequest request) {
+        String currentUserId = authService.getCurrentUserId(request);
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Authentication required to report user"));
+        }
+        int reportType = 1;
+        if (payload != null && payload.containsKey("reportType")) {
+            try {
+                reportType = Integer.parseInt(payload.get("reportType").toString());
+            } catch (Exception ignored) {}
+        }
+        userService.reportUser(userId, currentUserId, reportType);
+        return ResponseEntity.ok(ApiResponse.ok("Thank you for your report. The profile has been submitted for moderation review.", null));
+    }
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/modern-ui.css">
+    <link rel="stylesheet" href="/css/modern-ui.css?v=20261012.4">
     <style>
         .li-feed-grid {
             max-width: 1128px;
@@ -488,15 +488,15 @@
 
                     <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
                         <select id="postTypeSelect" class="li-select" style="flex: 1; padding: 6px 10px; font-size: 12px;">
-                            <option value="3">🏢 Workplace Update</option>
-                            <option value="2">💡 Architectural Fact</option>
-                            <option value="1">😄 Tech Meme</option>
+                            <option value="3">ðŸ¢ Workplace Update</option>
+                            <option value="2">ðŸ’¡ Architectural Fact</option>
+                            <option value="1">ðŸ˜„ Tech Meme</option>
                         </select>
                         <select id="postPrivacySelect" class="li-select" style="flex: 1; padding: 6px 10px; font-size: 12px;">
-                            <option value="4">🌐 Anyone (Public)</option>
-                            <option value="3">👥 Co-workers &amp; Followers</option>
-                            <option value="2">🔒 Co-workers Only</option>
-                            <option value="1">👁️ Only Me</option>
+                            <option value="4">ðŸŒ Anyone (Public)</option>
+                            <option value="3">ðŸ‘¥ Co-workers &amp; Followers</option>
+                            <option value="2">ðŸ”’ Co-workers Only</option>
+                            <option value="1">ðŸ‘ï¸ Only Me</option>
                         </select>
                     </div>
                 </div>
@@ -545,19 +545,19 @@
                 </div>
                 <a href="/index.html" class="li-news-item">
                     <div class="li-news-title">Java 25 Virtual Threads Adoption</div>
-                    <div class="li-news-meta">1d ago • 1,420 readers</div>
+                    <div class="li-news-meta">1d ago â€¢ 1,420 readers</div>
                 </a>
                 <a href="/index.html" class="li-news-item">
                     <div class="li-news-title">Neon Serverless DB Architecture</div>
-                    <div class="li-news-meta">2d ago • 980 readers</div>
+                    <div class="li-news-meta">2d ago â€¢ 980 readers</div>
                 </a>
                 <a href="/index.html" class="li-news-item">
                     <div class="li-news-title">Cloudflare R2 Direct Uploads</div>
-                    <div class="li-news-meta">3d ago • 840 readers</div>
+                    <div class="li-news-meta">3d ago â€¢ 840 readers</div>
                 </a>
                 <a href="/index.html" class="li-news-item">
                     <div class="li-news-title">Dhaka Fintech Engineering Scale</div>
-                    <div class="li-news-meta">4d ago • 2,150 readers</div>
+                    <div class="li-news-meta">4d ago â€¢ 2,150 readers</div>
                 </a>
             </div>
 
@@ -591,7 +591,7 @@
         </aside>
     </div>
 
-    <script src="/js/api.js?v=2.2"></script>
+    <script src="/js/api.js?v=20261012.4"></script>
     <script>
         let currentUser = null;
         let selectedPostImage = null;
@@ -627,7 +627,7 @@
                     document.getElementById('leftProfileName').innerText = currentUser.fullName || 'User';
                     document.getElementById('leftProfileName').href = `/profile.html?userId=${currentUser.id}`;
                     document.getElementById('leftProfileHeadline').innerText = currentUser.about || 'Software Professional';
-                    document.getElementById('leftProfileRank').innerText = `${currentUser.rank || 'Thinker'} • ${currentUser.rating || 0} pts`;
+                    document.getElementById('leftProfileRank').innerText = `${currentUser.rank || 'Thinker'} â€¢ ${currentUser.rating || 0} pts`;
                     document.getElementById('leftCoworkersCount').innerText = currentUser.coworkersCount || 0;
                     document.getElementById('leftFollowingCount').innerText = currentUser.followingCount || 0;
                     document.getElementById('leftRatingCount').innerText = currentUser.rating || 0;
@@ -644,10 +644,13 @@
                         document.getElementById('leftAvatar').src = avatarSrc;
                         document.getElementById('composerAvatar').src = avatarSrc;
                     }
-                    if (currentUser.backgroundPic) {
+                    if (currentUser.backgroundPic && !currentUser.backgroundPic.includes('prof.png') && currentUser.backgroundPic.trim() !== '') {
                         const coverSrc = currentUser.backgroundPic.startsWith('http') ? currentUser.backgroundPic : `/images/${currentUser.backgroundPic}`;
                         document.getElementById('leftCoverBg').style.backgroundImage = `url('${coverSrc}')`;
                         document.getElementById('leftCoverBg').style.backgroundSize = 'cover';
+                    } else {
+                        document.getElementById('leftCoverBg').style.backgroundImage = 'none';
+                        document.getElementById('leftCoverBg').style.backgroundColor = '#0a66c2';
                     }
                 } else {
                     showGuestState();
@@ -690,6 +693,30 @@
             document.getElementById('postImagePreviewBox').style.display = 'none';
         }
 
+        async function safeUploadImage(file, folder) {
+            if (window.API && typeof window.API.uploadImage === 'function') {
+                return await window.API.uploadImage(file, folder);
+            }
+            if (typeof window.uploadImage === 'function') {
+                return await window.uploadImage(file, folder);
+            }
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('folder', folder);
+            const res = await fetch('/api/storage/upload', {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.success && data.data) {
+                    return data.data;
+                }
+            }
+            throw new Error('Image upload failed. Please refresh the page.');
+        }
+
         async function publishPost() {
             if (!currentUser) return redirectToLogin();
             const content = document.getElementById('postContentInput').value.trim();
@@ -708,8 +735,8 @@
             try {
                 let uploadedImageUrl = null;
                 if (selectedPostImage) {
-                    showToast('Uploading image to Cloudflare R2...');
-                    const uploadRes = await API.uploadImage(selectedPostImage, 'posts');
+                    showToast('Uploading image...');
+                    const uploadRes = await safeUploadImage(selectedPostImage, 'posts');
                     if (uploadRes) {
                         uploadedImageUrl = uploadRes.downloadUrl || uploadRes.publicUrl;
                     }
@@ -730,6 +757,8 @@
             }
         }
 
+        const postsCache = new Map();
+
         async function loadFeed() {
             try {
                 const res = await API.getFeed(0, 20);
@@ -742,6 +771,7 @@
                 }
 
                 res.data.content.forEach(post => {
+                    postsCache.set(post.id, post);
                     feed.appendChild(renderPostCard(post));
                 });
             } catch (err) {
@@ -770,14 +800,36 @@
                     <div class="li-post-meta">
                         <div style="display: flex; align-items: center;">
                             <a href="/profile.html?userId=${post.authorId}" class="li-post-author">${escapeHtml(post.authorFullName)}</a>
-                            <span class="li-badge-pill">${badgeText}</span>
+                            <span class="li-badge-pill" id="post-badge-${post.id}">${badgeText}</span>
                         </div>
-                        <div class="li-post-headline">${escapeHtml(post.country || 'Bangladesh')} • Professional Network</div>
+                        <div class="li-post-headline">${escapeHtml(post.country || 'Bangladesh')} â€¢ Professional Network</div>
                         <div class="li-post-time">
-                            <span>${post.timeAgo || 'Recently'}</span> • <i class="fa-solid fa-earth-americas" style="font-size: 10px;"></i>
+                            <span>${post.timeAgo || 'Recently'}</span> â€¢ <i class="fa-solid fa-earth-americas" style="font-size: 10px;"></i>
                         </div>
                     </div>
-                    ${post.owner ? `<button onclick="deletePost('${post.id}')" style="background:none; border:none; color:var(--li-text-muted); cursor:pointer; font-size: 13px;" title="Delete post"><i class="fa-regular fa-trash-can"></i></button>` : ''}
+                    
+                    <div class="li-post-menu-container">
+                        <button class="li-post-menu-btn" onclick="togglePostMenu('${post.id}', event)" title="More options">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
+                        <div class="li-post-menu-dropdown" id="post-menu-${post.id}">
+                            ${post.owner ? `
+                                <button onclick="openEditPostModal('${post.id}', event)">
+                                    <i class="fa-regular fa-pen-to-square" style="color: var(--li-primary);"></i> Edit post
+                                </button>
+                                <button onclick="deletePost('${post.id}')" style="color: var(--li-danger);">
+                                    <i class="fa-regular fa-trash-can"></i> Delete post
+                                </button>
+                            ` : `
+                                <button onclick="openReportPostModal('${post.id}', event)">
+                                    <i class="fa-regular fa-flag" style="color: #f59e0b;"></i> Report post
+                                </button>
+                                <button onclick="hidePost('${post.id}')">
+                                    <i class="fa-regular fa-eye-slash"></i> Hide post
+                                </button>
+                            `}
+                        </div>
+                    </div>
                 </div>
 
                 <div class="li-post-content">${escapeHtml(post.content)}</div>
@@ -1056,6 +1108,162 @@
             }
         }
 
+        function togglePostMenu(postId, e) {
+            if (e) e.stopPropagation();
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => {
+                if (m.id !== `post-menu-${postId}`) m.classList.remove('show');
+            });
+            const menu = document.getElementById(`post-menu-${postId}`);
+            if (menu) menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+        });
+
+        async function hidePost(postId) {
+            try {
+                await API.hidePost(postId);
+                const card = document.getElementById(`post-${postId}`);
+                if (card) {
+                    card.style.transition = 'opacity 0.25s ease';
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 250);
+                }
+                showToast('Post hidden from feed.');
+            } catch (err) {
+                showToast(err.message || 'Failed to hide post.', true);
+            }
+        }
+
+        let editPostCurrentImageUrl = null;
+
+        function openEditPostModal(postId, e) {
+            if (e) e.stopPropagation();
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+            const post = postsCache.get(postId);
+            if (!post) return;
+
+            document.getElementById('editPostId').value = post.id;
+            document.getElementById('editPostContentTextarea').value = post.content || '';
+            document.getElementById('editPostTypeSelect').value = post.postType || 3;
+            document.getElementById('editPostPrivacySelect').value = post.privacy || 4;
+
+            const pic = post.authorPic ? (post.authorPic.startsWith('http') ? post.authorPic : `/images/${post.authorPic}`) : '/images/prof.png';
+            document.getElementById('editPostAuthorAvatar').src = pic;
+            document.getElementById('editPostAuthorName').innerText = post.authorFullName || 'You';
+
+            editPostCurrentImageUrl = post.imageUrl || null;
+            const imgPreviewBox = document.getElementById('editPostImagePreviewBox');
+            const imgPreview = document.getElementById('editPostImagePreview');
+            if (editPostCurrentImageUrl) {
+                imgPreview.src = editPostCurrentImageUrl;
+                imgPreviewBox.style.display = 'block';
+            } else {
+                imgPreviewBox.style.display = 'none';
+            }
+
+            document.getElementById('editPostModal').classList.add('show');
+        }
+
+        function closeEditPostModal() {
+            document.getElementById('editPostModal').classList.remove('show');
+        }
+
+        function removeEditPostImage() {
+            editPostCurrentImageUrl = '';
+            document.getElementById('editPostImagePreviewBox').style.display = 'none';
+        }
+
+        async function savePostEdit() {
+            const postId = document.getElementById('editPostId').value;
+            const content = document.getElementById('editPostContentTextarea').value.trim();
+            const postType = parseInt(document.getElementById('editPostTypeSelect').value);
+            const privacy = parseInt(document.getElementById('editPostPrivacySelect').value);
+
+            if (!content) {
+                showToast('Post content cannot be empty.', true);
+                return;
+            }
+
+            const btn = document.getElementById('savePostEditBtn');
+            btn.disabled = true;
+            btn.innerText = 'Saving...';
+
+            try {
+                const res = await API.updatePost(postId, content, postType, privacy, editPostCurrentImageUrl);
+                const updated = res.data;
+                postsCache.set(postId, updated);
+
+                // Update post card DOM in place
+                const postCard = document.getElementById(`post-${postId}`);
+                if (postCard) {
+                    const contentEl = postCard.querySelector('.li-post-content');
+                    if (contentEl) contentEl.innerText = updated.content;
+
+                    const badgeEl = document.getElementById(`post-badge-${postId}`);
+                    if (badgeEl) {
+                        badgeEl.innerText = updated.postType === 1 ? 'Meme' : (updated.postType === 2 ? 'Fact' : 'Update');
+                    }
+
+                    let mediaEl = postCard.querySelector('.li-post-media');
+                    if (updated.imageUrl) {
+                        if (mediaEl) {
+                            mediaEl.src = updated.imageUrl;
+                        } else {
+                            const newImg = document.createElement('img');
+                            newImg.className = 'li-post-media';
+                            newImg.src = updated.imageUrl;
+                            newImg.alt = 'Post attachment';
+                            contentEl.after(newImg);
+                        }
+                    } else if (mediaEl) {
+                        mediaEl.remove();
+                    }
+                }
+
+                closeEditPostModal();
+                showToast('Post updated successfully!');
+            } catch (err) {
+                showToast(err.message || 'Failed to update post.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Save changes';
+            }
+        }
+
+        function openReportPostModal(postId, e) {
+            if (e) e.stopPropagation();
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+            document.getElementById('reportPostId').value = postId;
+            document.getElementById('reportPostModal').classList.add('show');
+        }
+
+        function closeReportPostModal() {
+            document.getElementById('reportPostModal').classList.remove('show');
+        }
+
+        async function submitPostReport() {
+            const postId = document.getElementById('reportPostId').value;
+            const selectedRadio = document.querySelector('input[name="reportReason"]:checked');
+            const reportType = selectedRadio ? parseInt(selectedRadio.value) : 1;
+
+            const btn = document.getElementById('submitPostReportBtn');
+            btn.disabled = true;
+            btn.innerText = 'Submitting...';
+
+            try {
+                await API.reportPost(postId, reportType);
+                closeReportPostModal();
+                showToast('Thank you. Your report has been submitted for moderation review.');
+            } catch (err) {
+                showToast(err.message || 'Failed to report post.', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Submit Report';
+            }
+        }
+
         function redirectToLogin() {
             window.location.href = '/login.html';
         }
@@ -1067,5 +1275,90 @@
             })[m]);
         }
     </script>
+
+    <!-- Edit Post Modal -->
+    <div class="li-modal-overlay" id="editPostModal" onclick="if(event.target===this) closeEditPostModal()">
+        <div class="li-modal-card">
+            <div class="li-modal-header">
+                <h3 class="li-modal-title"><i class="fa-regular fa-pen-to-square" style="color: var(--li-primary); margin-right: 6px;"></i> Edit Post</h3>
+                <button type="button" class="li-modal-close-btn" onclick="closeEditPostModal()">&times;</button>
+            </div>
+            <div class="li-modal-body">
+                <input type="hidden" id="editPostId">
+                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 14px;">
+                    <img id="editPostAuthorAvatar" src="/images/prof.png" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <div id="editPostAuthorName" style="font-weight: 700; font-size: 14px; color: #fff;">User</div>
+                        <div style="display: flex; gap: 8px; margin-top: 4px;">
+                            <select id="editPostTypeSelect" class="li-select" style="padding: 3px 8px; font-size: 11px;">
+                                <option value="3">ðŸ¢ Workplace Update</option>
+                                <option value="2">ðŸ’¡ Architectural Fact</option>
+                                <option value="1">ðŸ˜„ Tech Meme</option>
+                            </select>
+                            <select id="editPostPrivacySelect" class="li-select" style="padding: 3px 8px; font-size: 11px;">
+                                <option value="4">ðŸŒ Anyone (Public)</option>
+                                <option value="3">ðŸ‘¥ Co-workers &amp; Followers</option>
+                                <option value="2">ðŸ”’ Co-workers Only</option>
+                                <option value="1">ðŸ‘ï¸ Only Me</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <textarea id="editPostContentTextarea" class="li-composer-textarea" style="min-height: 120px;" placeholder="What would you like to edit?"></textarea>
+
+                <div id="editPostImagePreviewBox" style="display: none; position: relative; margin-top: 10px;">
+                    <img id="editPostImagePreview" style="max-height: 180px; width: 100%; object-fit: cover; border-radius: var(--li-radius-md); border: 1px solid var(--li-border);">
+                    <button type="button" onclick="removeEditPostImage()" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.8); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px;">&times;</button>
+                </div>
+            </div>
+            <div class="li-modal-footer">
+                <button type="button" class="li-btn-secondary" onclick="closeEditPostModal()">Cancel</button>
+                <button type="button" class="li-btn-primary" id="savePostEditBtn" onclick="savePostEdit()">Save changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Post Modal -->
+    <div class="li-modal-overlay" id="reportPostModal" onclick="if(event.target===this) closeReportPostModal()">
+        <div class="li-modal-card" style="max-width: 460px;">
+            <div class="li-modal-header">
+                <h3 class="li-modal-title"><i class="fa-regular fa-flag" style="color: #f59e0b; margin-right: 6px;"></i> Report Post</h3>
+                <button type="button" class="li-modal-close-btn" onclick="closeReportPostModal()">&times;</button>
+            </div>
+            <div class="li-modal-body">
+                <input type="hidden" id="reportPostId">
+                <p style="font-size: 13px; color: var(--li-text-secondary); margin-bottom: 14px;">
+                    Help keep our professional community safe and constructive. Select a reason:
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="reportReason" value="1" checked style="accent-color: var(--li-primary);">
+                        <span><strong>Spam or promotional scam</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="reportReason" value="2" style="accent-color: var(--li-primary);">
+                        <span><strong>Harassment, hate speech, or abuse</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="reportReason" value="3" style="accent-color: var(--li-primary);">
+                        <span><strong>Misinformation or false claims</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="reportReason" value="4" style="accent-color: var(--li-primary);">
+                        <span><strong>Inappropriate or offensive content</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--li-bg-elevated); border: 1px solid var(--li-border); border-radius: var(--li-radius-sm); cursor: pointer; font-size: 13px; color: #fff;">
+                        <input type="radio" name="reportReason" value="5" style="accent-color: var(--li-primary);">
+                        <span><strong>Other violation</strong></span>
+                    </label>
+                </div>
+            </div>
+            <div class="li-modal-footer">
+                <button type="button" class="li-btn-secondary" onclick="closeReportPostModal()">Cancel</button>
+                <button type="button" class="li-btn-primary" id="submitPostReportBtn" onclick="submitPostReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

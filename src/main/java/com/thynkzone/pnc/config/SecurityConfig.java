@@ -41,7 +41,7 @@ public class SecurityConfig {
                 // Static frontend files and legacy views
                 .requestMatchers(
                     "/", "/*.html", "/*.jsp",
-                    "/css/**", "/icon/**", "/images/**", "/js/**",
+                    "/css/**", "/icon/**", "/images/**", "/js/**", "/uploads/**",
                     "/*.css", "/*.ico", "/*.png", "/*.jpg", "/*.svg"
                 ).permitAll()
                 // Public REST API endpoints

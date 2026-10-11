@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/modern-ui.css">
+    <link rel="stylesheet" href="/css/modern-ui.css?v=20261012.4">
     <style>
         .network-container {
             max-width: 840px;
@@ -176,10 +176,10 @@
                 <button class="network-tab-btn active" onclick="switchTab('coworkers', this)">Co-workers</button>
                 <button class="network-tab-btn" onclick="switchTab('following', this)">Following</button>
                 <button class="network-tab-btn" onclick="switchTab('followers', this)">Followers</button>
-                <a href="/people-you-may-know.html" class="network-tab-btn" style="text-decoration: none; color: var(--li-text-secondary);">
-                    <i class="fa-solid fa-lightbulb"></i> Suggestions
+                <a href="/people-you-may-know.html" class="network-tab-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px; color: #fff; background: rgba(10, 102, 194, 0.22); border: 1px solid var(--li-primary);">
+                    <i class="fa-solid fa-user-plus" style="color: var(--li-primary);"></i> People You May Know
                 </a>
-                <a href="/view-all-requests.html" class="network-tab-btn" style="text-decoration: none; margin-left: auto; border: 1px solid var(--li-primary); color: var(--li-primary);">
+                <a href="/view-all-requests.html" class="network-tab-btn" style="text-decoration: none; margin-left: auto; border: 1px solid var(--li-border); color: var(--li-text-secondary);">
                     <i class="fa-solid fa-user-clock"></i> Pending Requests
                 </a>
             </div>
@@ -190,7 +190,7 @@
         </div>
     </div>
 
-    <script src="/js/api.js?v=2.2"></script>
+    <script src="/js/api.js?v=20261012.4"></script>
     <script>
         let currentTab = 'coworkers';
 

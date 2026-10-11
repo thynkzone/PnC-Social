@@ -16,7 +16,15 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
+import java.util.Map;
 
 @Service
 public class StorageServiceImpl implements StorageService {
@@ -98,6 +106,58 @@ public class StorageServiceImpl implements StorageService {
                     .build();
             s3Client.deleteObject(deleteRequest);
         } catch (Exception ignored) {
+        }
+    }
+
+    @Override
+    public Map<String, String> uploadFile(String userId, MultipartFile file, String folder) {
+        String contentType = file.getContentType();
+        if (contentType == null || contentType.isBlank()) {
+            contentType = "image/jpeg";
+        }
+        String extension = switch (contentType) {
+            case "image/png" -> ".png";
+            case "image/webp" -> ".webp";
+            case "image/gif" -> ".gif";
+            default -> ".jpg";
+        };
+
+        String filename = String.format("%s_%s%s", userId, UidGenerator.generateId(), extension);
+        String objectKey = String.format("%s/%s", folder, filename);
+
+        // Try streaming to Cloudflare R2 first
+        try {
+            PutObjectRequest putRequest = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(objectKey)
+                    .contentType(contentType)
+                    .build();
+
+            s3Client.putObject(putRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+            String cdnUrl = getPublicUrl(objectKey);
+            return Map.of(
+                    "publicUrl", cdnUrl,
+                    "downloadUrl", cdnUrl,
+                    "objectKey", objectKey
+            );
+        } catch (Exception s3Ex) {
+            // S3/R2 direct streaming failed (e.g. placeholder credentials, R2 network timeout)
+            // Fall back to server local uploads directory
+            try {
+                Path uploadDir = Paths.get("uploads", folder);
+                Files.createDirectories(uploadDir);
+                Path targetPath = uploadDir.resolve(filename);
+                Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+                String localUrl = "/uploads/" + folder + "/" + filename;
+                return Map.of(
+                        "publicUrl", localUrl,
+                        "downloadUrl", localUrl,
+                        "objectKey", objectKey
+                );
+            } catch (IOException ioEx) {
+                throw new RuntimeException("Failed to save uploaded file: " + ioEx.getMessage(), ioEx);
+            }
         }
     }
 }
