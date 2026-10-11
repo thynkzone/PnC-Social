@@ -61,4 +61,16 @@ public class AuthController {
         UserProfileDto profile = userService.getUserProfile(user.getId(), user.getId());
         return ResponseEntity.ok(ApiResponse.ok("User profile retrieved.", profile));
     }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.initiatePasswordReset(request);
+        return ResponseEntity.ok(ApiResponse.ok("If an account exists with this email, a verification reset code has been sent.", null));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        authService.resetPassword(request);
+        return ResponseEntity.ok(ApiResponse.ok("Password has been reset successfully. You may now log in.", null));
+    }
 }

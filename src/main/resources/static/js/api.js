@@ -147,13 +147,13 @@ const ColdStartUI = {
                         <div class="pnc-spin-circle"></div>
                         <div class="pnc-bolt-icon">⚡</div>
                     </div>
-                    <h3 class="pnc-cold-title" id="pnc-cold-title">Waking Up Cloud Service</h3>
+                    <h3 class="pnc-cold-title" id="pnc-cold-title">Loading...</h3>
                     <p class="pnc-cold-msg" id="pnc-cold-desc">
-                        Render & Neon DB serverless instances spin down when idle on free tier. Waking up usually takes ~15–30 seconds. Thank you for your patience!
+                        Loading, please wait...
                     </p>
                     <div class="pnc-timer-pill">
                         <span class="pnc-timer-dot"></span>
-                        <span id="pnc-cold-counter">Waking server: 1s</span>
+                        <span id="pnc-cold-counter">Loading, please wait...</span>
                     </div>
                     <div class="pnc-retry-msg" id="pnc-cold-retry" style="display: none;"></div>
                 </div>
@@ -168,16 +168,6 @@ const ColdStartUI = {
         const overlay = this.createOverlay();
         if (customTitle) document.getElementById('pnc-cold-title').innerText = customTitle;
         if (customDesc) document.getElementById('pnc-cold-desc').innerText = customDesc;
-
-        if (!this.startTime) {
-            this.startTime = Date.now();
-            const counter = document.getElementById('pnc-cold-counter');
-            this.timerInterval = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-                if (counter) counter.innerText = `Waking server: ${elapsed}s`;
-            }, 1000);
-        }
-
         overlay.classList.add('active');
     },
 
@@ -185,27 +175,22 @@ const ColdStartUI = {
         const retryEl = document.getElementById('pnc-cold-retry');
         if (retryEl) {
             retryEl.style.display = 'block';
-            retryEl.innerText = `Starting up... Retrying connection (${attempt}/${maxAttempts})`;
+            retryEl.innerText = `Connecting... (${attempt}/${maxAttempts})`;
         }
     },
 
     hide() {
         if (!this.visible) return;
         const counter = document.getElementById('pnc-cold-counter');
-        if (counter) counter.innerText = 'Connected! ✅';
+        if (counter) counter.innerText = 'Ready!';
 
         setTimeout(() => {
             const overlay = document.getElementById(this.modalId);
             if (overlay) overlay.classList.remove('active');
-            if (this.timerInterval) {
-                clearInterval(this.timerInterval);
-                this.timerInterval = null;
-            }
-            this.startTime = null;
             this.visible = false;
             const retryEl = document.getElementById('pnc-cold-retry');
             if (retryEl) retryEl.style.display = 'none';
-        }, 400);
+        }, 300);
     }
 };
 
@@ -333,6 +318,14 @@ const API = {
         return this.post('/auth/logout');
     },
 
+    forgotPassword(email) {
+        return this.post('/auth/forgot-password', { email });
+    },
+
+    resetPassword(email, code, newPassword) {
+        return this.post('/auth/reset-password', { email, code, newPassword });
+    },
+
     // Posts & Feed
     getFeed(page = 0, size = 15) {
         return this.get(`/posts/feed?page=${page}&size=${size}`);
@@ -385,6 +378,52 @@ const API = {
 
     getSuggestions() {
         return this.get('/users/suggestions');
+    },
+
+    updateProfilePicture(imageUrl) {
+        return this.put('/users/profile-picture', { imageUrl });
+    },
+
+    updateBackgroundPicture(imageUrl) {
+        return this.put('/users/background-picture', { imageUrl });
+    },
+
+    // Storage & Direct Cloudflare R2 Uploads
+    async uploadImage(file, folder = 'posts') {
+        const presignRes = await this.post('/storage/presigned-upload', {
+            filename: file.name,
+            contentType: file.type || 'image/jpeg',
+            folder: folder
+        });
+
+        if (!presignRes || !presignRes.data || !presignRes.data.uploadUrl) {
+            throw new Error(presignRes?.message || 'Could not obtain upload authorization.');
+        }
+
+        const { uploadUrl, publicUrl, objectKey } = presignRes.data;
+
+        const uploadRes = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': file.type || 'image/jpeg'
+            },
+            body: file
+        });
+
+        if (!uploadRes.ok) {
+            throw new Error(`Direct storage upload failed (HTTP ${uploadRes.status})`);
+        }
+
+        return { publicUrl, objectKey };
+    },
+
+    // Advertisements
+    getAds(country = 'Bangladesh') {
+        return this.get(`/ads?country=${encodeURIComponent(country)}`);
+    },
+
+    createAd(adData) {
+        return this.post('/ads', adData);
     },
 
     // Connections

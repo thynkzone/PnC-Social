@@ -2,38 +2,30 @@
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
-    <title>Page Not Found - P&C</title>
+    <title>Page Not Found - P&amp;C</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-        body {
-            background: #18181b;
-            color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        h1 { font-size: 4rem; color: #1da1f2; margin: 0 0 10px 0; }
-        p { color: #b0b3b8; font-size: 1.1rem; margin-bottom: 24px; }
-        a {
-            background: #1da1f2;
-            color: #fff;
-            text-decoration: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
 </head>
-<body>
-    <div>
-        <h1>404</h1>
-        <p>The page you are looking for does not exist or has been moved.</p>
-        <a href="/index.html">Back to Home</a>
+<body class="li-auth-page">
+
+    <!-- Top Logo Only for Title / Branding -->
+    <div style="margin-bottom: 24px; text-align: center;">
+        <a href="/index.html" class="li-logo-link" title="Home">
+            <img src="/icon/p&c.png" alt="Logo" style="width: 48px; height: 48px; border-radius: 8px;">
+        </a>
     </div>
+
+    <div class="li-auth-card" style="max-width: 420px; text-align: center;">
+        <h1 style="font-size: 64px; font-weight: 800; color: var(--li-primary); line-height: 1; margin-bottom: 12px;">404</h1>
+        <h2 class="li-auth-title" style="font-size: 18px;">Page not found</h2>
+        <p class="li-auth-subtitle">The page you were looking for doesn't exist or may have been moved.</p>
+
+        <a href="/index.html" class="li-btn-primary" style="width: 100%; padding: 12px; font-size: 14px;">
+            Go to Feed
+        </a>
+    </div>
+
 </body>
 </html>

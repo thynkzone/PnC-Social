@@ -64,4 +64,38 @@ public class UserController {
         List<UserProfileDto> suggestions = userService.getSuggestedUsers(currentUserId != null ? currentUserId : "", limit);
         return ResponseEntity.ok(ApiResponse.ok(suggestions));
     }
+
+    @PutMapping("/profile-picture")
+    public ResponseEntity<ApiResponse<Void>> updateProfilePicture(
+            @RequestBody java.util.Map<String, String> body,
+            HttpServletRequest request) {
+        String currentUserId = authService.getCurrentUserId(request);
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Authentication required"));
+        }
+        String imageUrl = body.get("imageUrl");
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Image URL is required"));
+        }
+        userService.updateProfilePicture(currentUserId, imageUrl);
+        return ResponseEntity.ok(ApiResponse.ok("Profile picture updated successfully.", null));
+    }
+
+    @PutMapping("/background-picture")
+    public ResponseEntity<ApiResponse<Void>> updateBackgroundPicture(
+            @RequestBody java.util.Map<String, String> body,
+            HttpServletRequest request) {
+        String currentUserId = authService.getCurrentUserId(request);
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Authentication required"));
+        }
+        String imageUrl = body.get("imageUrl");
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Image URL is required"));
+        }
+        userService.updateBackgroundPicture(currentUserId, imageUrl);
+        return ResponseEntity.ok(ApiResponse.ok("Background picture updated successfully.", null));
+    }
 }

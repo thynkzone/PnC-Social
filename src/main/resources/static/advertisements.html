@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
+    <title>Advertisements &amp; Campaigns - P&amp;C</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
+    <style>
+        .ads-container {
+            max-width: 840px;
+            margin: 20px auto 40px;
+            padding: 0 16px;
+        }
+
+        .ad-item-card {
+            background: var(--li-bg-elevated);
+            border: 1px solid var(--li-border-light);
+            border-radius: var(--li-radius-md);
+            padding: 16px;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .ad-item-img {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--li-radius-sm);
+            object-fit: cover;
+            background: #111;
+            flex-shrink: 0;
+            border: 1px solid var(--li-border-light);
+        }
+        .ad-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .ad-item-badge {
+            background: rgba(16, 185, 129, 0.16);
+            color: var(--li-success);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LinkedIn Top Navbar (Logo Only for branding) -->
+    <header class="li-navbar">
+        <div class="li-nav-inner">
+            <div class="li-nav-left">
+                <!-- Only logo for title/brand, no text -->
+                <a href="/index.html" class="li-logo-link" title="P&amp;C Home">
+                    <img src="/icon/p&c.png" alt="P&amp;C" class="li-logo-img">
+                </a>
+                
+                <div class="li-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalNavSearch" class="li-search-input" placeholder="Search people, topics..." onkeydown="if(event.key==='Enter') window.location.href='/search-user.html?q='+encodeURIComponent(this.value)">
+                </div>
+            </div>
+
+            <nav class="li-nav-menu">
+                <a href="/index.html" class="li-nav-item" title="Home Feed">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+                <a href="/following.html" class="li-nav-item" title="My Network">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>My Network</span>
+                </a>
+                <a href="/advertisements.html" class="li-nav-item active" title="Ads &amp; Campaigns">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Ads</span>
+                </a>
+                <a href="/post-updates.html" class="li-nav-item" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                
+                <!-- Authenticated User Dropdown -->
+                <div class="li-nav-item" id="navMeItem" style="display: none;" onclick="toggleMeDropdown(event)">
+                    <img id="navAvatar" class="li-nav-avatar" src="/images/prof.png" alt="Profile">
+                    <span style="display: flex; align-items: center; gap: 2px;">Me <i class="fa-solid fa-caret-down" style="font-size: 9px;"></i></span>
+
+                    <div class="li-dropdown-menu" id="meDropdownMenu">
+                        <div style="padding: 10px 16px; display: flex; gap: 10px; align-items: center;">
+                            <img id="menuAvatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" src="/images/prof.png" alt="User">
+                            <div style="min-width: 0;">
+                                <div id="menuName" style="font-weight: 700; font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                                <div id="menuHeadline" style="font-size: 11px; color: var(--li-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Professional</div>
+                            </div>
+                        </div>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="/profile.html" id="menuProfileLink" class="li-dropdown-item"><i class="fa-solid fa-user"></i> View Profile</a>
+                        <a href="/view-all-requests.html" class="li-dropdown-item"><i class="fa-solid fa-user-clock"></i> Pending Requests</a>
+                        <a href="/settings.html" class="li-dropdown-item"><i class="fa-solid fa-gear"></i> Settings &amp; Privacy</a>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="javascript:void(0)" onclick="handleLogout()" class="li-dropdown-item" style="color: var(--li-danger);"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+                    </div>
+                </div>
+
+                <a href="/login.html" id="navLoginBtn" class="li-btn-primary" style="margin-left: 8px; font-size: 13px; padding: 6px 16px;">
+                    Sign In
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="ads-container">
+
+        <!-- Create Ad Section -->
+        <div class="li-card" style="padding: 24px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
+                <i class="fa-solid fa-bullhorn" style="color: var(--li-primary); font-size: 20px;"></i>
+                <h1 style="font-size: 18px; font-weight: 700; color: #fff;">Promote Your Workplace Innovation or Business</h1>
+            </div>
+
+            <form id="adForm" onsubmit="handleCreateAd(event)">
+                <div class="li-form-group">
+                    <label class="li-label">Campaign Message / Description</label>
+                    <textarea id="adText" class="li-textarea" rows="3" required placeholder="Describe your product, workplace innovation, or job opening..."></textarea>
+                </div>
+
+                <div class="li-form-group">
+                    <label class="li-label">Banner Image</label>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="file" id="adImageFile" accept="image/*" style="display: none;" onchange="handleAdImageSelect(event)">
+                        <button type="button" class="li-btn-secondary" onclick="document.getElementById('adImageFile').click()">
+                            <i class="fa-solid fa-image"></i> Select Image
+                        </button>
+                        <span id="adFileName" style="color: var(--li-text-secondary); font-size: 13px;">No file chosen</span>
+                    </div>
+                    <img id="adImagePreview" style="display: none; max-height: 140px; border-radius: var(--li-radius-sm); margin-top: 12px; object-fit: cover; border: 1px solid var(--li-border);">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                    <div class="li-form-group" style="margin-bottom: 0;">
+                        <label class="li-label">Target Region</label>
+                        <select id="adCountry" class="li-select">
+                            <option value="Bangladesh" selected>Bangladesh</option>
+                            <option value="Global">Global</option>
+                            <option value="United States">United States</option>
+                            <option value="India">India</option>
+                        </select>
+                    </div>
+                    <div class="li-form-group" style="margin-bottom: 0;">
+                        <label class="li-label">Budget / Priority Bid ($)</label>
+                        <input type="number" id="adBid" class="li-input" value="5" min="1" step="1">
+                    </div>
+                </div>
+
+                <button type="submit" class="li-btn-primary" id="submitAdBtn" style="padding: 10px 24px;">
+                    Launch Campaign
+                </button>
+            </form>
+        </div>
+
+        <!-- Active Sponsored Ads -->
+        <div class="li-card" style="padding: 24px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
+                <i class="fa-solid fa-rectangle-ad" style="color: var(--li-success); font-size: 20px;"></i>
+                <h2 style="font-size: 18px; font-weight: 700; color: #fff;">Active Sponsored Highlights</h2>
+            </div>
+
+            <div id="adsList">
+                <p style="text-align: center; color: var(--li-text-muted); padding: 30px;">Loading advertisements...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        let selectedAdImageFile = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const meRes = await API.getCurrentUser();
+                if (meRes && meRes.success) {
+                    setupNavbarMe(meRes.data);
+                }
+            } catch (err) {}
+
+            loadAds();
+        });
+
+        function setupNavbarMe(user) {
+            document.getElementById('navLoginBtn').style.display = 'none';
+            const navMe = document.getElementById('navMeItem');
+            navMe.style.display = 'flex';
+            if (user.profilePic) {
+                const pic = user.profilePic.startsWith('http') ? user.profilePic : `/images/${user.profilePic}`;
+                document.getElementById('navAvatar').src = pic;
+                document.getElementById('menuAvatar').src = pic;
+            }
+            document.getElementById('menuName').innerText = user.fullName || 'User';
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} • ${user.rating || 0} pts`;
+            document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
+        }
+
+        function toggleMeDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('meDropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', () => {
+            const menu = document.getElementById('meDropdownMenu');
+            if (menu) menu.classList.remove('show');
+        });
+
+        async function handleLogout() {
+            try {
+                await API.logout();
+            } finally {
+                window.location.href = '/login.html';
+            }
+        }
+
+        async function loadAds() {
+            const list = document.getElementById('adsList');
+            try {
+                const res = await API.getAds('Bangladesh');
+                list.innerHTML = '';
+                if (!res.data || res.data.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: var(--li-text-muted); padding: 30px;">No active campaigns right now. Create the first one above!</p>';
+                    return;
+                }
+                res.data.forEach(ad => {
+                    const item = document.createElement('div');
+                    item.className = 'ad-item-card';
+                    item.innerHTML = `
+                        ${ad.pic ? `<img src="${ad.pic}" class="ad-item-img" alt="Ad">` : '<div class="ad-item-img" style="display:flex;align-items:center;justify-content:center;color:var(--li-text-muted);"><i class="fa-solid fa-bullhorn fa-2x"></i></div>'}
+                        <div class="ad-item-content">
+                            <span class="ad-item-badge">SPONSORED</span>
+                            <div style="font-size: 14px; color: #fff; margin-bottom: 6px; line-height: 1.45; font-weight: 500;">${escapeHtml(ad.text || '')}</div>
+                            <div style="font-size: 12px; color: var(--li-text-muted);">
+                                Target: ${ad.country || 'Global'} &bull; ${ad.createdAt ? new Date(ad.createdAt).toLocaleDateString() : 'Recently'}
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (err) {
+                list.innerHTML = `<p style="color: var(--li-danger); text-align: center; padding: 20px;">${err.message}</p>`;
+            }
+        }
+
+        function handleAdImageSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            selectedAdImageFile = file;
+            document.getElementById('adFileName').innerText = file.name;
+            const preview = document.getElementById('adImagePreview');
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = 'block';
+        }
+
+        async function handleCreateAd(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitAdBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Uploading & Launching...';
+
+            try {
+                let picUrl = '';
+                if (selectedAdImageFile) {
+                    const uploadResult = await API.uploadImage(selectedAdImageFile, 'ads');
+                    picUrl = uploadResult.publicUrl || uploadResult.downloadUrl;
+                }
+
+                const payload = {
+                    text: document.getElementById('adText').value.trim(),
+                    pic: picUrl,
+                    country: document.getElementById('adCountry').value,
+                    bid: parseFloat(document.getElementById('adBid').value) || 1.0
+                };
+
+                const res = await API.createAd(payload);
+                if (res.success) {
+                    showToast('Campaign launched successfully!');
+                    document.getElementById('adForm').reset();
+                    selectedAdImageFile = null;
+                    document.getElementById('adFileName').innerText = 'No file chosen';
+                    document.getElementById('adImagePreview').style.display = 'none';
+                    loadAds();
+                }
+            } catch (err) {
+                showToast(err.message, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Launch Campaign';
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+            })[m]);
+        }
+    </script>
+</body>
+</html>

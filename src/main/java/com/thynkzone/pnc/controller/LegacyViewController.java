@@ -76,4 +76,14 @@ public class LegacyViewController {
     public String terms() {
         return "forward:/terms-and-conditions.html";
     }
+
+    @GetMapping({"/advertisements.jsp", "/advertisements.html", "/manage-ads.jsp"})
+    public String advertisements() {
+        return "forward:/advertisements.html";
+    }
+
+    @GetMapping({"/forgot-password.jsp", "/forgot-password.html", "/reset-password.jsp", "/reset-password.html", "/forgot.jsp", "/forgot.html"})
+    public String forgotPassword() {
+        return "forward:/forgot-password.html";
+    }
 }

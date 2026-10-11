@@ -1,0 +1,401 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --li-bg-main: #000000;
+    --li-bg-surface: #1d2226;
+    --li-bg-elevated: #232a30;
+    --li-bg-input: #12171a;
+    --li-bg-hover: rgba(255, 255, 255, 0.08);
+    --li-border: rgba(255, 255, 255, 0.12);
+    --li-border-light: rgba(255, 255, 255, 0.07);
+    --li-primary: #0a66c2;
+    --li-primary-hover: #004182;
+    --li-primary-active: #094f96;
+    --li-primary-soft: rgba(10, 102, 194, 0.16);
+    --li-text-primary: rgba(255, 255, 255, 0.95);
+    --li-text-secondary: rgba(255, 255, 255, 0.65);
+    --li-text-muted: rgba(255, 255, 255, 0.45);
+    --li-danger: #e0245e;
+    --li-success: #10b981;
+    --li-radius-sm: 4px;
+    --li-radius-md: 8px;
+    --li-radius-lg: 10px;
+    --li-radius-pill: 24px;
+    --li-shadow-sm: 0 0 0 1px rgba(255, 255, 255, 0.08);
+    --li-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --li-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--li-font);
+}
+
+body {
+    background: var(--li-bg-main);
+    color: var(--li-text-primary);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Global LinkedIn-Style Top Navbar */
+.li-navbar {
+    background: var(--li-bg-surface);
+    border-bottom: 1px solid var(--li-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    height: 54px;
+}
+
+.li-nav-inner {
+    max-width: 1128px;
+    margin: 0 auto;
+    padding: 0 16px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.li-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Logo only - no text */
+.li-logo-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    line-height: 0;
+}
+
+.li-logo-img {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    object-fit: contain;
+    transition: transform 0.15s ease;
+}
+
+.li-logo-img:hover {
+    transform: scale(1.05);
+}
+
+.li-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.li-search-box i {
+    position: absolute;
+    left: 12px;
+    color: var(--li-text-secondary);
+    font-size: 13px;
+    pointer-events: none;
+}
+
+.li-search-input {
+    background: var(--li-bg-input);
+    border: 1px solid var(--li-border);
+    border-radius: var(--li-radius-md);
+    color: var(--li-text-primary);
+    padding: 7px 12px 7px 34px;
+    font-size: 13px;
+    width: 240px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.li-search-input:focus {
+    width: 280px;
+    border-color: var(--li-primary);
+    background: var(--li-bg-elevated);
+    box-shadow: 0 0 0 1px var(--li-primary);
+}
+
+.li-search-input::placeholder {
+    color: var(--li-text-secondary);
+}
+
+/* Navigation items stacked icon + label */
+.li-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+}
+
+.li-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 66px;
+    height: 54px;
+    color: var(--li-text-secondary);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+    gap: 2px;
+    position: relative;
+    transition: color 0.15s ease;
+    cursor: pointer;
+}
+
+.li-nav-item i {
+    font-size: 18px;
+    margin-bottom: 1px;
+}
+
+.li-nav-item:hover, .li-nav-item.active {
+    color: #ffffff;
+}
+
+.li-nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 2px 2px 0 0;
+}
+
+.li-nav-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Dropdown Me */
+.li-dropdown-menu {
+    position: absolute;
+    top: 56px;
+    right: 0;
+    background: var(--li-bg-surface);
+    border: 1px solid var(--li-border);
+    border-radius: var(--li-radius-md);
+    box-shadow: var(--li-shadow-md);
+    min-width: 220px;
+    padding: 8px 0;
+    display: none;
+    z-index: 1010;
+}
+
+.li-dropdown-menu.show {
+    display: block;
+}
+
+.li-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    color: var(--li-text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.li-dropdown-item:hover {
+    background: var(--li-bg-hover);
+    color: #ffffff;
+}
+
+.li-dropdown-divider {
+    height: 1px;
+    background: var(--li-border);
+    margin: 6px 0;
+}
+
+/* Base Cards */
+.li-card {
+    background: var(--li-bg-surface);
+    border: 1px solid var(--li-border);
+    border-radius: var(--li-radius-lg);
+    box-shadow: var(--li-shadow-sm);
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+/* LinkedIn Pill Buttons */
+.li-btn-primary {
+    background: var(--li-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--li-radius-pill);
+    padding: 8px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s ease;
+}
+
+.li-btn-primary:hover {
+    background: var(--li-primary-hover);
+}
+
+.li-btn-secondary {
+    background: transparent;
+    color: var(--li-primary);
+    border: 1px solid var(--li-primary);
+    border-radius: var(--li-radius-pill);
+    padding: 7px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.li-btn-secondary:hover {
+    background: var(--li-primary-soft);
+    border-color: var(--li-primary-hover);
+}
+
+.li-btn-ghost {
+    background: transparent;
+    color: var(--li-text-secondary);
+    border: none;
+    border-radius: var(--li-radius-md);
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.li-btn-ghost:hover {
+    background: var(--li-bg-hover);
+    color: var(--li-text-primary);
+}
+
+/* Auth Cards (Login, Signup, Forgot Password) */
+.li-auth-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+}
+
+.li-auth-card {
+    background: var(--li-bg-surface);
+    border: 1px solid var(--li-border);
+    border-radius: var(--li-radius-lg);
+    box-shadow: var(--li-shadow-md);
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.li-auth-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #ffffff;
+}
+
+.li-auth-subtitle {
+    font-size: 13px;
+    color: var(--li-text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.45;
+}
+
+.li-form-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.li-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--li-text-secondary);
+    margin-bottom: 6px;
+}
+
+.li-input, .li-textarea, .li-select {
+    width: 100%;
+    background: var(--li-bg-input);
+    border: 1px solid var(--li-border);
+    border-radius: var(--li-radius-sm);
+    color: var(--li-text-primary);
+    padding: 10px 12px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.li-input:focus, .li-textarea:focus, .li-select:focus {
+    border-color: var(--li-primary);
+    box-shadow: 0 0 0 1px var(--li-primary);
+}
+
+.li-footer {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--li-border-light);
+    text-align: center;
+    color: var(--li-text-muted);
+    font-size: 12px;
+}
+
+.li-footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 10px;
+}
+
+.li-footer-links a {
+    color: var(--li-text-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.li-footer-links a:hover {
+    color: var(--li-primary);
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .li-search-box {
+        display: none;
+    }
+    .li-nav-item {
+        min-width: 50px;
+        font-size: 10px;
+    }
+    .li-nav-item i {
+        font-size: 16px;
+    }
+}

@@ -2,307 +2,612 @@
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
-    <title>P&C (People &amp; Culture)</title>
+    <title>People &amp; Culture - Modern Professional Network</title>
     <meta charset="UTF-8">
-    <meta name="description" content="P&C (People & Culture) is the place to share your ideas with the world. A workplace community for innovators, entrepreneurs, and thinkers."/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="/css-pages.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
-        :root {
-            --bg-main: #18181b;
-            --bg-card: rgba(36, 37, 46, 0.85);
-            --bg-glass: rgba(36, 37, 46, 0.65);
-            --bg-tertiary: #23232a;
-            --accent-primary: #1da1f2;
-            --accent-secondary: #0a8cd8;
-            --accent-danger: #e0245e;
-            --text-primary: #fff;
-            --text-secondary: #b0b3b8;
-            --text-muted: #888;
-            --border-primary: #2c2f36;
-            --shadow-md: 0 2px 12px 0 rgba(0,0,0,0.18);
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            margin: 0;
-            min-height: 100vh;
-        }
-        .main-container {
-            max-width: 680px;
+        .li-feed-grid {
+            max-width: 1128px;
             margin: 20px auto;
             padding: 0 16px;
+            display: grid;
+            grid-template-columns: 225px minmax(0, 560px) 300px;
+            gap: 24px;
+            align-items: start;
         }
-        .post-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border-primary);
-            padding: 18px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-md);
+        @media (max-width: 992px) {
+            .li-feed-grid {
+                grid-template-columns: minmax(0, 1fr) 300px;
+            }
+            .li-sidebar-left { display: none; }
         }
-        .post-header {
+        @media (max-width: 768px) {
+            .li-feed-grid {
+                grid-template-columns: 1fr;
+            }
+            .li-sidebar-right { display: none; }
+        }
+
+        /* Left Profile Mini-Card */
+        .li-mini-profile {
+            text-align: center;
+            overflow: hidden;
+        }
+        .li-profile-cover {
+            height: 56px;
+            background: linear-gradient(135deg, #0a66c2 0%, #004182 100%);
+            position: relative;
+        }
+        .li-profile-avatar-wrap {
+            position: relative;
+            margin-top: -36px;
+            display: inline-block;
+        }
+        .li-profile-avatar-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid var(--li-bg-surface);
+            object-fit: cover;
+            background: var(--li-bg-surface);
+        }
+        .li-profile-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            margin-top: 8px;
+        }
+        .li-profile-headline {
+            font-size: 12px;
+            color: var(--li-text-secondary);
+            padding: 4px 16px 12px;
+            line-height: 1.4;
+        }
+        .li-profile-stats {
+            border-top: 1px solid var(--li-border-light);
+            padding: 10px 16px;
+            text-align: left;
+            font-size: 12px;
+        }
+        .li-stat-row {
             display: flex;
-            align-items: center;
+            justify-content: space-between;
+            padding: 4px 0;
+            color: var(--li-text-secondary);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+        .li-stat-row:hover {
+            color: var(--li-primary);
+        }
+        .li-stat-num {
+            font-weight: 700;
+            color: var(--li-primary);
+        }
+
+        /* Post Composer */
+        .li-composer-top {
+            display: flex;
             gap: 12px;
+            align-items: center;
             margin-bottom: 12px;
         }
-        .post-avatar {
+        .li-composer-avatar {
             width: 44px;
             height: 44px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--border-primary);
         }
-        .post-author-name {
+        .li-composer-prompt {
+            flex: 1;
+            background: var(--li-bg-input);
+            border: 1px solid var(--li-border);
+            border-radius: 24px;
+            padding: 12px 18px;
+            color: var(--li-text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+        .li-composer-prompt:hover {
+            background: var(--li-bg-elevated);
+            border-color: var(--li-text-muted);
+        }
+        .li-composer-expanded {
+            display: none;
+            margin-top: 12px;
+        }
+        .li-composer-textarea {
+            width: 100%;
+            background: var(--li-bg-input);
+            border: 1px solid var(--li-border);
+            border-radius: var(--li-radius-md);
+            color: var(--li-text-primary);
+            padding: 12px;
+            font-size: 14px;
+            min-height: 90px;
+            outline: none;
+            resize: vertical;
+        }
+        .li-composer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid var(--li-border-light);
+        }
+        .li-action-pill-btn {
+            background: transparent;
+            border: none;
+            color: var(--li-text-secondary);
+            font-size: 13px;
             font-weight: 600;
-            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: var(--li-radius-md);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s;
+        }
+        .li-action-pill-btn:hover {
+            background: var(--li-bg-hover);
+            color: #fff;
+        }
+
+        /* Post Card */
+        .li-post-card {
+            background: var(--li-bg-surface);
+            border: 1px solid var(--li-border);
+            border-radius: var(--li-radius-lg);
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: var(--li-shadow-sm);
+        }
+        .li-post-header {
+            display: flex;
+            gap: 12px;
+            padding: 14px 16px 8px;
+            align-items: flex-start;
+        }
+        .li-post-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .li-post-meta {
+            flex: 1;
+            min-width: 0;
+        }
+        .li-post-author {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
             text-decoration: none;
         }
-        .post-time {
-            font-size: 0.8rem;
-            color: var(--text-muted);
+        .li-post-author:hover {
+            color: var(--li-primary);
+            text-decoration: underline;
         }
-        .post-badge {
-            font-size: 0.75rem;
+        .li-post-headline {
+            font-size: 12px;
+            color: var(--li-text-secondary);
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .li-post-time {
+            font-size: 11px;
+            color: var(--li-text-muted);
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .li-badge-pill {
+            font-size: 11px;
+            font-weight: 600;
             padding: 2px 8px;
             border-radius: 12px;
-            background: var(--bg-tertiary);
-            color: var(--accent-primary);
-            font-weight: 500;
-            margin-left: 8px;
+            background: var(--li-primary-soft);
+            color: var(--li-primary);
+            display: inline-flex;
+            align-items: center;
+            margin-left: 6px;
         }
-        .post-content {
-            font-size: 0.98rem;
+        .li-post-content {
+            padding: 6px 16px 12px;
+            font-size: 14px;
+            color: var(--li-text-primary);
             line-height: 1.5;
-            margin-bottom: 14px;
             white-space: pre-wrap;
+            word-break: break-word;
         }
-        .post-img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-        .post-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-primary);
-            color: var(--text-secondary);
-        }
-        .action-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-        .action-btn:hover, .action-btn.active {
-            color: var(--accent-primary);
-        }
-        .action-btn.dislike-btn.active {
-            color: var(--accent-danger);
-        }
-        .create-post-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border-primary);
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-        .create-post-textarea {
+        .li-post-media {
             width: 100%;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            color: var(--text-primary);
-            padding: 12px;
-            font-size: 0.95rem;
-            resize: vertical;
-            min-height: 80px;
-            box-sizing: border-box;
-            outline: none;
+            max-height: 440px;
+            object-fit: cover;
+            border-top: 1px solid var(--li-border-light);
+            border-bottom: 1px solid var(--li-border-light);
+            background: #0a0c0e;
         }
-        .create-post-footer {
+        .li-social-counts {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 12px;
+            color: var(--li-text-secondary);
+            border-bottom: 1px solid var(--li-border-light);
         }
-        .btn-primary {
-            background: var(--accent-primary);
-            color: #fff;
+        .li-social-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 4px 8px;
+        }
+        .li-social-btn {
+            background: transparent;
             border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
+            color: var(--li-text-secondary);
+            font-size: 13px;
             font-weight: 600;
+            padding: 10px 4px;
+            border-radius: var(--li-radius-md);
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s;
         }
-        .btn-primary:hover {
-            background: var(--accent-secondary);
+        .li-social-btn:hover {
+            background: var(--li-bg-hover);
+            color: #fff;
         }
-        .comments-list {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-primary);
+        .li-social-btn.liked {
+            color: var(--li-primary);
         }
-        .comment-item {
+        .li-social-btn.disliked {
+            color: var(--li-danger);
+        }
+
+        /* Comments section */
+        .li-comments-drawer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid var(--li-border-light);
+            background: rgba(18, 23, 26, 0.4);
+        }
+        .li-comment-input-row {
             display: flex;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
+            align-items: center;
         }
-        .comment-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .comment-bubble {
-            background: var(--bg-tertiary);
-            padding: 8px 12px;
-            border-radius: 12px;
+        .li-comment-input {
             flex: 1;
-        }
-        .comment-author {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-        .comment-text {
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-        .comment-input-box {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .comment-input {
-            flex: 1;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-primary);
+            background: var(--li-bg-input);
+            border: 1px solid var(--li-border);
             border-radius: 20px;
-            color: var(--text-primary);
             padding: 8px 14px;
+            color: var(--li-text-primary);
+            font-size: 13px;
             outline: none;
         }
-        .topnav {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-primary);
-            padding: 10px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+        .li-comment-bubble {
+            background: var(--li-bg-elevated);
+            border: 1px solid var(--li-border-light);
+            border-radius: 10px;
+            padding: 8px 12px;
+            flex: 1;
         }
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--accent-primary);
+
+        /* Right Sidebar Widgets */
+        .li-widget-header {
+            font-size: 14px;
             font-weight: 700;
-            font-size: 1.2rem;
-        }
-        .nav-logo img {
-            width: 36px;
-            height: 36px;
-        }
-        .nav-links {
+            color: #fff;
+            padding: 14px 16px 10px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            justify-content: space-between;
         }
-        .nav-link {
-            color: var(--text-secondary);
-            font-size: 1.2rem;
+        .li-news-item {
+            padding: 8px 16px;
             text-decoration: none;
-            transition: color 0.2s;
+            display: block;
+            transition: background 0.15s;
         }
-        .nav-link:hover, .nav-link.active {
-            color: var(--accent-primary);
+        .li-news-item:hover {
+            background: var(--li-bg-hover);
         }
-        .nav-profile-img {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1.5px solid var(--border-primary);
-            cursor: pointer;
+        .li-news-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--li-text-primary);
+            line-height: 1.35;
+        }
+        .li-news-meta {
+            font-size: 11px;
+            color: var(--li-text-muted);
+            margin-top: 2px;
+        }
+        .li-suggest-row {
+            display: flex;
+            gap: 10px;
+            padding: 10px 16px;
+            align-items: center;
+            border-top: 1px solid var(--li-border-light);
         }
     </style>
 </head>
 <body>
 
-    <!-- Modern Navigation -->
-    <nav class="topnav">
-        <a href="/index.html" class="nav-logo">
-            <img src="/icon/p&c.png" alt="P&C Logo">
-            <span>People &amp; Culture</span>
-        </a>
-        <div class="nav-links">
-            <a href="/index.html" class="nav-link active" title="Feed"><i class="fa-solid fa-house"></i></a>
-            <a href="/following.html" class="nav-link" title="Network"><i class="fa-solid fa-user-group"></i></a>
-            <a href="/post-updates.html" class="nav-link" title="Notifications"><i class="fa-solid fa-bell"></i></a>
-            <a href="/search-user.html" class="nav-link" title="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
-            <a id="profileNavLink" href="/login.html">
-                <img id="navAvatar" class="nav-profile-img" src="/images/prof.png" alt="Profile">
-            </a>
-        </div>
-    </nav>
-
-    <div class="main-container">
-        <!-- Post Composer -->
-        <div class="create-post-card" id="composerSection" style="display: none;">
-            <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
-                <img id="composerAvatar" class="post-avatar" src="/images/prof.png" alt="User">
-                <span id="composerName" style="font-weight: 600;">What are you thinking?</span>
-            </div>
-            <textarea id="postContentInput" class="create-post-textarea" placeholder="Share an insight, work update, meme, or fact..."></textarea>
-            <div class="create-post-footer">
-                <div style="display: flex; gap: 10px;">
-                    <select id="postTypeSelect" style="background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 6px; padding: 6px;">
-                        <option value="3">Work Update</option>
-                        <option value="1">Meme</option>
-                        <option value="2">Fact</option>
-                    </select>
-                    <select id="postPrivacySelect" style="background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 6px; padding: 6px;">
-                        <option value="4">Public</option>
-                        <option value="3">Co-workers &amp; Followers</option>
-                        <option value="2">Co-workers Only</option>
-                        <option value="1">Only Me</option>
-                    </select>
+    <!-- LinkedIn-Style Top Navigation -->
+    <header class="li-navbar">
+        <div class="li-nav-inner">
+            <div class="li-nav-left">
+                <!-- Only logo for title/brand, no text -->
+                <a href="/index.html" class="li-logo-link" title="P&amp;C Network Home">
+                    <img src="/icon/p&c.png" alt="P&amp;C" class="li-logo-img">
+                </a>
+                
+                <div class="li-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalNavSearch" class="li-search-input" placeholder="Search people, topics..." onkeydown="if(event.key==='Enter') window.location.href='/search-user.html?q='+encodeURIComponent(this.value)">
                 </div>
-                <button class="btn-primary" onclick="publishPost()">Post</button>
             </div>
-        </div>
 
-        <!-- Feed Container -->
-        <div id="postsFeed">
-            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
-                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
-                <p>Loading posts...</p>
-            </div>
+            <nav class="li-nav-menu">
+                <a href="/index.html" class="li-nav-item active" title="Home Feed">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+                <a href="/following.html" class="li-nav-item" title="My Network">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>My Network</span>
+                </a>
+                <a href="/advertisements.html" class="li-nav-item" title="Advertisements &amp; Campaigns">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Ads</span>
+                </a>
+                <a href="/post-updates.html" class="li-nav-item" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                
+                <!-- Authenticated User Dropdown -->
+                <div class="li-nav-item" id="navMeItem" style="display: none;" onclick="toggleMeDropdown(event)">
+                    <img id="navAvatar" class="li-nav-avatar" src="/images/prof.png" alt="Profile">
+                    <span style="display: flex; align-items: center; gap: 2px;">Me <i class="fa-solid fa-caret-down" style="font-size: 9px;"></i></span>
+
+                    <div class="li-dropdown-menu" id="meDropdownMenu">
+                        <div style="padding: 10px 16px; display: flex; gap: 10px; align-items: center;">
+                            <img id="menuAvatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" src="/images/prof.png" alt="User">
+                            <div style="min-width: 0;">
+                                <div id="menuName" style="font-weight: 700; font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                                <div id="menuHeadline" style="font-size: 11px; color: var(--li-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Professional</div>
+                            </div>
+                        </div>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="/profile.html" id="menuProfileLink" class="li-dropdown-item"><i class="fa-solid fa-user"></i> View Profile</a>
+                        <a href="/view-all-requests.html" class="li-dropdown-item"><i class="fa-solid fa-user-clock"></i> Pending Requests</a>
+                        <a href="/settings.html" class="li-dropdown-item"><i class="fa-solid fa-gear"></i> Settings &amp; Privacy</a>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="javascript:void(0)" onclick="handleLogout()" class="li-dropdown-item" style="color: var(--li-danger);"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+                    </div>
+                </div>
+
+                <!-- Unauthenticated Sign In Button -->
+                <a href="/login.html" id="navLoginBtn" class="li-btn-primary" style="margin-left: 8px; font-size: 13px; padding: 6px 16px;">
+                    Sign In
+                </a>
+            </nav>
         </div>
+    </header>
+
+    <!-- LinkedIn 3-Column Grid -->
+    <div class="li-feed-grid">
+
+        <!-- Left Sidebar: Profile Summary Card -->
+        <aside class="li-sidebar-left">
+            <div class="li-card li-mini-profile" id="leftProfileCard">
+                <div class="li-profile-cover" id="leftCoverBg"></div>
+                <div class="li-profile-avatar-wrap">
+                    <img id="leftAvatar" class="li-profile-avatar-img" src="/images/prof.png" alt="Profile">
+                </div>
+                <div style="padding: 0 12px 14px;">
+                    <a href="/login.html" class="li-profile-name" id="leftProfileName">Welcome, Guest!</a>
+                    <div class="li-profile-headline" id="leftProfileHeadline">Sign in to share insights, follow colleagues, and explore discussions.</div>
+                    <span class="li-badge-pill" id="leftProfileRank">Novice</span>
+                </div>
+                <div class="li-profile-stats">
+                    <a href="/following.html" class="li-stat-row">
+                        <span>Co-workers</span>
+                        <span class="li-stat-num" id="leftCoworkersCount">0</span>
+                    </a>
+                    <a href="/following.html" class="li-stat-row">
+                        <span>Following</span>
+                        <span class="li-stat-num" id="leftFollowingCount">0</span>
+                    </a>
+                    <a href="/profile.html" class="li-stat-row">
+                        <span>Points / Rating</span>
+                        <span class="li-stat-num" id="leftRatingCount">0</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Navigation Card -->
+            <div class="li-card" style="padding: 12px 16px; font-size: 12px;">
+                <div style="font-weight: 700; color: #fff; margin-bottom: 8px;">Explore</div>
+                <a href="/following.html" class="li-stat-row" style="padding: 6px 0;"><i class="fa-solid fa-user-group"></i> My Network</a>
+                <a href="/advertisements.html" class="li-stat-row" style="padding: 6px 0;"><i class="fa-solid fa-bullhorn"></i> Advertisements</a>
+                <a href="/search-user.html" class="li-stat-row" style="padding: 6px 0;"><i class="fa-solid fa-magnifying-glass"></i> Find Colleagues</a>
+            </div>
+        </aside>
+
+        <!-- Center Main Column: Post Composer + Feed -->
+        <main class="li-main-feed">
+
+            <!-- Guest Hero Card (if not logged in) -->
+            <div id="guestHeroCard" class="li-card" style="display: none; padding: 24px; text-align: center; background: linear-gradient(135deg, rgba(10, 102, 194, 0.16) 0%, rgba(29, 34, 38, 0.95) 100%);">
+                <img src="/icon/p&c.png" alt="P&C" style="width: 48px; height: 48px; margin-bottom: 12px;">
+                <h2 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 6px;">Welcome to your professional community</h2>
+                <p style="font-size: 13px; color: var(--li-text-secondary); margin-bottom: 18px;">Connect with coworker networks, exchange software engineering practices, and elevate your workplace culture.</p>
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <a href="/login.html" class="li-btn-primary">Sign In</a>
+                    <a href="/signup.html" class="li-btn-secondary">Join Now</a>
+                </div>
+            </div>
+
+            <!-- LinkedIn-Style Post Composer -->
+            <div class="li-card" id="composerCard" style="display: none; padding: 14px 16px;">
+                <div class="li-composer-top">
+                    <img id="composerAvatar" class="li-composer-avatar" src="/images/prof.png" alt="User">
+                    <div class="li-composer-prompt" id="composerPromptBox" onclick="expandComposer()">
+                        Start a post, share ideas or workplace updates...
+                    </div>
+                </div>
+
+                <!-- Expanded Composer Form -->
+                <div class="li-composer-expanded" id="composerExpandedForm">
+                    <textarea id="postContentInput" class="li-composer-textarea" placeholder="What would you like to talk about? Share an architectural decision, lesson learned, or workplace update..."></textarea>
+                    
+                    <!-- Attached Image Preview Box -->
+                    <div id="postImagePreviewBox" style="display: none; position: relative; margin: 10px 0;">
+                        <img id="postImagePreview" style="max-height: 220px; width: 100%; object-fit: cover; border-radius: var(--li-radius-md); border: 1px solid var(--li-border);">
+                        <button type="button" onclick="clearPostImage()" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fff; border: none; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 14px;">&times;</button>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 12px; align-items: center;">
+                        <select id="postTypeSelect" class="li-select" style="flex: 1; padding: 6px 10px; font-size: 12px;">
+                            <option value="3">🏢 Workplace Update</option>
+                            <option value="2">💡 Architectural Fact</option>
+                            <option value="1">😄 Tech Meme</option>
+                        </select>
+                        <select id="postPrivacySelect" class="li-select" style="flex: 1; padding: 6px 10px; font-size: 12px;">
+                            <option value="4">🌐 Anyone (Public)</option>
+                            <option value="3">👥 Co-workers &amp; Followers</option>
+                            <option value="2">🔒 Co-workers Only</option>
+                            <option value="1">👁️ Only Me</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="li-composer-actions">
+                    <div style="display: flex; gap: 4px;">
+                        <input type="file" id="postImageFileInput" accept="image/*" style="display: none;" onchange="handlePostImageSelect(event)">
+                        <button type="button" class="li-action-pill-btn" onclick="document.getElementById('postImageFileInput').click(); expandComposer();">
+                            <i class="fa-regular fa-image" style="color: #378fe9; font-size: 16px;"></i> Media
+                        </button>
+                        <button type="button" class="li-action-pill-btn" onclick="expandComposer(); document.getElementById('postTypeSelect').value='3';">
+                            <i class="fa-solid fa-briefcase" style="color: #e7a33e; font-size: 16px;"></i> Update
+                        </button>
+                        <button type="button" class="li-action-pill-btn" onclick="expandComposer(); document.getElementById('postTypeSelect').value='2';">
+                            <i class="fa-regular fa-lightbulb" style="color: #579f61; font-size: 16px;"></i> Fact
+                        </button>
+                    </div>
+                    <button class="li-btn-primary" id="publishPostBtn" onclick="publishPost()" style="padding: 6px 18px; font-size: 13px;">
+                        Post
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feed Divider -->
+            <div style="display: flex; align-items: center; margin: 12px 0 16px;">
+                <div style="flex: 1; height: 1px; background: var(--li-border-light);"></div>
+                <span style="font-size: 12px; color: var(--li-text-secondary); padding: 0 10px;">Sort by: <strong style="color: #fff;">Recent Insights</strong></span>
+            </div>
+
+            <!-- Feed Stream -->
+            <div id="postsFeed">
+                <div style="text-align: center; padding: 40px; color: var(--li-text-secondary);">
+                    <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top: 12px;">Loading feed...</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Sidebar: News, Suggested Coworkers & Footer -->
+        <aside class="li-sidebar-right">
+            <!-- Trending in Tech -->
+            <div class="li-card">
+                <div class="li-widget-header">
+                    <span>Trending in Tech</span>
+                    <i class="fa-solid fa-circle-info" style="color: var(--li-text-muted); font-size: 13px;"></i>
+                </div>
+                <a href="/index.html" class="li-news-item">
+                    <div class="li-news-title">Java 25 Virtual Threads Adoption</div>
+                    <div class="li-news-meta">1d ago • 1,420 readers</div>
+                </a>
+                <a href="/index.html" class="li-news-item">
+                    <div class="li-news-title">Neon Serverless DB Architecture</div>
+                    <div class="li-news-meta">2d ago • 980 readers</div>
+                </a>
+                <a href="/index.html" class="li-news-item">
+                    <div class="li-news-title">Cloudflare R2 Direct Uploads</div>
+                    <div class="li-news-meta">3d ago • 840 readers</div>
+                </a>
+                <a href="/index.html" class="li-news-item">
+                    <div class="li-news-title">Dhaka Fintech Engineering Scale</div>
+                    <div class="li-news-meta">4d ago • 2,150 readers</div>
+                </a>
+            </div>
+
+            <!-- People You May Know / Suggested Co-workers -->
+            <div class="li-card" id="suggestedUsersCard">
+                <div class="li-widget-header">
+                    <span>Add to your feed</span>
+                    <a href="/search-user.html" style="font-size: 12px; color: var(--li-primary); text-decoration: none;">View all</a>
+                </div>
+                <div id="suggestedUsersList">
+                    <p style="text-align: center; padding: 14px; color: var(--li-text-muted); font-size: 12px;">Loading colleagues...</p>
+                </div>
+            </div>
+
+            <!-- LinkedIn Footer -->
+            <footer class="li-footer" style="margin-top: 16px;">
+                <div class="li-footer-links">
+                    <a href="/about-us.html">About</a>
+                    <a href="/advertisements.html">Advertising</a>
+                    <a href="/support.html">Help Center</a>
+                    <a href="/terms-and-conditions.html">Privacy &amp; Terms</a>
+                    <a href="/forgot-password.html">Forgot Password</a>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 8px;">
+                    <img src="/icon/p&c.png" alt="P&C" style="width: 16px; height: 16px; border-radius: 3px;">
+                    <span>People &amp; Culture &copy; 2026</span>
+                </div>
+            </footer>
+        </aside>
     </div>
 
     <script src="/js/api.js"></script>
     <script>
         let currentUser = null;
+        let selectedPostImage = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
             await checkAuth();
             await loadFeed();
+            await loadSuggestions();
+        });
+
+        function toggleMeDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('meDropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', () => {
+            const menu = document.getElementById('meDropdownMenu');
+            if (menu) menu.classList.remove('show');
         });
 
         async function checkAuth() {
@@ -310,18 +615,115 @@
                 const res = await API.getCurrentUser();
                 if (res && res.success && res.data) {
                     currentUser = res.data;
-                    document.getElementById('composerSection').style.display = 'block';
-                    document.getElementById('composerName').innerText = `What are you thinking, ${currentUser.fullName || 'there'}?`;
-                    document.getElementById('profileNavLink').href = `/profile.html?userId=${currentUser.id}`;
+                    document.getElementById('composerCard').style.display = 'block';
+                    document.getElementById('guestHeroCard').style.display = 'none';
+                    document.getElementById('navLoginBtn').style.display = 'none';
+                    document.getElementById('navMeItem').style.display = 'flex';
+
+                    // Update left mini-profile
+                    document.getElementById('leftProfileName').innerText = currentUser.fullName || 'User';
+                    document.getElementById('leftProfileName').href = `/profile.html?userId=${currentUser.id}`;
+                    document.getElementById('leftProfileHeadline').innerText = currentUser.about || 'Software Professional';
+                    document.getElementById('leftProfileRank').innerText = `${currentUser.rank || 'Thinker'} • ${currentUser.rating || 0} pts`;
+                    document.getElementById('leftCoworkersCount').innerText = currentUser.coworkersCount || 0;
+                    document.getElementById('leftFollowingCount').innerText = currentUser.followingCount || 0;
+                    document.getElementById('leftRatingCount').innerText = currentUser.rating || 0;
+
+                    // Header menu
+                    document.getElementById('menuName').innerText = currentUser.fullName || 'User';
+                    document.getElementById('menuHeadline').innerText = currentUser.about || 'Professional';
+                    document.getElementById('menuProfileLink').href = `/profile.html?userId=${currentUser.id}`;
+
                     if (currentUser.profilePic) {
                         const avatarSrc = currentUser.profilePic.startsWith('http') ? currentUser.profilePic : `/images/${currentUser.profilePic}`;
                         document.getElementById('navAvatar').src = avatarSrc;
+                        document.getElementById('menuAvatar').src = avatarSrc;
+                        document.getElementById('leftAvatar').src = avatarSrc;
                         document.getElementById('composerAvatar').src = avatarSrc;
                     }
+                    if (currentUser.backgroundPic) {
+                        const coverSrc = currentUser.backgroundPic.startsWith('http') ? currentUser.backgroundPic : `/images/${currentUser.backgroundPic}`;
+                        document.getElementById('leftCoverBg').style.backgroundImage = `url('${coverSrc}')`;
+                        document.getElementById('leftCoverBg').style.backgroundSize = 'cover';
+                    }
+                } else {
+                    showGuestState();
                 }
             } catch (err) {
-                // Visitor / not logged in
-                document.getElementById('profileNavLink').href = '/login.html';
+                showGuestState();
+            }
+        }
+
+        function showGuestState() {
+            currentUser = null;
+            document.getElementById('composerCard').style.display = 'none';
+            document.getElementById('guestHeroCard').style.display = 'block';
+            document.getElementById('navLoginBtn').style.display = 'inline-flex';
+            document.getElementById('navMeItem').style.display = 'none';
+        }
+
+        function expandComposer() {
+            document.getElementById('composerExpandedForm').style.display = 'block';
+            document.getElementById('composerPromptBox').style.display = 'none';
+            document.getElementById('postContentInput').focus();
+        }
+
+        function handlePostImageSelect(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            selectedPostImage = file;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('postImagePreview').src = evt.target.result;
+                document.getElementById('postImagePreviewBox').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+            expandComposer();
+        }
+
+        function clearPostImage() {
+            selectedPostImage = null;
+            document.getElementById('postImageFileInput').value = '';
+            document.getElementById('postImagePreviewBox').style.display = 'none';
+        }
+
+        async function publishPost() {
+            if (!currentUser) return redirectToLogin();
+            const content = document.getElementById('postContentInput').value.trim();
+            const postType = parseInt(document.getElementById('postTypeSelect').value) || 3;
+            const privacy = parseInt(document.getElementById('postPrivacySelect').value) || 4;
+            const btn = document.getElementById('publishPostBtn');
+
+            if (!content && !selectedPostImage) {
+                showToast('Please write some content or attach an image.', true);
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Posting...';
+
+            try {
+                let uploadedImageUrl = null;
+                if (selectedPostImage) {
+                    showToast('Uploading image to Cloudflare R2...');
+                    const uploadRes = await API.uploadImage(selectedPostImage, 'posts');
+                    if (uploadRes && uploadRes.downloadUrl) {
+                        uploadedImageUrl = uploadRes.downloadUrl;
+                    }
+                }
+
+                await API.createPost(content, postType, privacy, uploadedImageUrl);
+                showToast('Post published!');
+                document.getElementById('postContentInput').value = '';
+                clearPostImage();
+                document.getElementById('composerExpandedForm').style.display = 'none';
+                document.getElementById('composerPromptBox').style.display = 'block';
+                await loadFeed();
+            } catch (err) {
+                showToast(err.message || 'Failed to publish post', true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Post';
             }
         }
 
@@ -332,7 +734,7 @@
                 feed.innerHTML = '';
 
                 if (!res.data || !res.data.content || res.data.content.length === 0) {
-                    feed.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><p>No posts yet. Be the first to share an idea!</p></div>';
+                    feed.innerHTML = '<div class="li-card" style="text-align: center; padding: 40px; color: var(--li-text-secondary);"><p>No posts published yet. Be the first to share an insight!</p></div>';
                     return;
                 }
 
@@ -340,101 +742,123 @@
                     feed.appendChild(renderPostCard(post));
                 });
             } catch (err) {
-                document.getElementById('postsFeed').innerHTML = `<div style="text-align: center; color: var(--accent-danger); padding: 40px;">Failed to load feed: ${err.message}</div>`;
+                document.getElementById('postsFeed').innerHTML = '<div class="li-card" style="text-align: center; padding: 30px; color: var(--li-danger);">Failed to load posts.</div>';
             }
         }
 
         function renderPostCard(post) {
-            const card = document.createElement('div');
-            card.className = 'post-card';
+            const card = document.createElement('article');
+            card.className = 'li-post-card';
             card.id = `post-${post.id}`;
 
-            const typeLabel = post.postType === 1 ? 'Meme' : post.postType === 2 ? 'Fact' : 'Update';
-            const avatarSrc = post.authorProfilePic && post.authorProfilePic.startsWith('http') 
-                ? post.authorProfilePic 
-                : `/images/${post.authorProfilePic || 'prof.png'}`;
+            const authorPic = post.authorPic ? (post.authorPic.startsWith('http') ? post.authorPic : `/images/${post.authorPic}`) : '/images/prof.png';
+            const isLiked = !!(post.isLiked || post.liked);
+            const isDisliked = !!(post.isDisliked || post.disliked);
+            const likesCount = post.likesCount || 0;
+            const commentsCount = post.commentsCount || 0;
+
+            const badgeText = post.postType === 1 ? 'Meme' : (post.postType === 2 ? 'Fact' : 'Update');
 
             card.innerHTML = `
-                <div class="post-header">
-                    <img class="post-avatar" src="${avatarSrc}" alt="${post.authorFullName}">
-                    <div>
-                        <a href="/profile.html?userId=${post.authorId}" class="post-author-name">${post.authorFullName}</a>
-                        <span class="post-badge">${typeLabel}</span>
-                        <div class="post-time">${post.timeAgo || 'Recently'}</div>
+                <div class="li-post-header">
+                    <a href="/profile.html?userId=${post.authorId}">
+                        <img class="li-post-avatar" src="${authorPic}" alt="${escapeHtml(post.authorFullName)}">
+                    </a>
+                    <div class="li-post-meta">
+                        <div style="display: flex; align-items: center;">
+                            <a href="/profile.html?userId=${post.authorId}" class="li-post-author">${escapeHtml(post.authorFullName)}</a>
+                            <span class="li-badge-pill">${badgeText}</span>
+                        </div>
+                        <div class="li-post-headline">${escapeHtml(post.country || 'Bangladesh')} • Professional Network</div>
+                        <div class="li-post-time">
+                            <span>${post.timeAgo || 'Recently'}</span> • <i class="fa-solid fa-earth-americas" style="font-size: 10px;"></i>
+                        </div>
                     </div>
+                    ${post.owner ? `<button onclick="deletePost('${post.id}')" style="background:none; border:none; color:var(--li-text-muted); cursor:pointer; font-size: 13px;" title="Delete post"><i class="fa-regular fa-trash-can"></i></button>` : ''}
                 </div>
-                <div class="post-content">${escapeHtml(post.content)}</div>
-                ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img" alt="Post attachment">` : ''}
-                <div class="post-actions">
-                    <button class="action-btn like-btn ${post.liked ? 'active' : ''}" onclick="toggleLike('${post.id}', ${post.liked})">
-                        <i class="fa-solid fa-heart"></i> <span id="likes-count-${post.id}">${post.likesCount || 0}</span>
-                    </button>
-                    <button class="action-btn dislike-btn ${post.disliked ? 'active' : ''}" onclick="toggleDislike('${post.id}', ${post.disliked})">
-                        <i class="fa-solid fa-thumbs-down"></i> <span id="dislikes-count-${post.id}">${post.dislikesCount || 0}</span>
-                    </button>
-                    <button class="action-btn" onclick="toggleComments('${post.id}')">
-                        <i class="fa-solid fa-comment"></i> <span>${post.commentsCount || 0}</span>
-                    </button>
-                    ${currentUser && currentUser.id === post.authorId ? `
-                        <button class="action-btn" onclick="deletePost('${post.id}')" style="margin-left: auto; color: var(--accent-danger);">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    ` : ''}
+
+                <div class="li-post-content">${escapeHtml(post.content)}</div>
+
+                ${post.imageUrl ? `<img src="${post.imageUrl}" class="li-post-media" alt="Post attachment">` : ''}
+
+                <div class="li-social-counts">
+                    <span id="likes-count-${post.id}">
+                        <i class="fa-solid fa-thumbs-up" style="color: var(--li-primary); font-size: 11px;"></i>
+                        <span id="likes-num-${post.id}">${likesCount}</span>
+                    </span>
+                    <span id="comments-count-${post.id}" onclick="toggleComments('${post.id}')" style="cursor: pointer;">
+                        ${commentsCount} comments
+                    </span>
                 </div>
-                <div class="comments-list" id="comments-${post.id}" style="display: none;">
+
+                <div class="li-social-actions">
+                    <button class="li-social-btn ${isLiked ? 'liked' : ''}" id="like-btn-${post.id}" onclick="toggleLike('${post.id}', ${isLiked})">
+                        <i class="${isLiked ? 'fa-solid' : 'fa-regular'} fa-thumbs-up"></i> Like
+                    </button>
+                    <button class="li-social-btn" onclick="toggleComments('${post.id}')">
+                        <i class="fa-regular fa-comment-dots"></i> Comment
+                    </button>
+                    <button class="li-social-btn ${isDisliked ? 'disliked' : ''}" id="dislike-btn-${post.id}" onclick="toggleDislike('${post.id}', ${isDisliked})">
+                        <i class="${isDisliked ? 'fa-solid' : 'fa-regular'} fa-thumbs-down"></i> Pass
+                    </button>
+                    <button class="li-social-btn" onclick="copyPostLink('${post.id}')">
+                        <i class="fa-regular fa-share-from-square"></i> Share
+                    </button>
+                </div>
+
+                <div class="li-comments-drawer" id="comments-${post.id}" style="display: none;">
+                    <div class="li-comment-input-row">
+                        <img src="${currentUser && currentUser.profilePic ? (currentUser.profilePic.startsWith('http') ? currentUser.profilePic : `/images/${currentUser.profilePic}`) : '/images/prof.png'}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                        <input type="text" class="li-comment-input" id="comment-input-${post.id}" placeholder="Add a thoughtful comment..." onkeypress="handleCommentKey(event, '${post.id}')">
+                        <button class="li-btn-primary" style="padding: 6px 14px; font-size: 12px;" onclick="submitComment('${post.id}')">Post</button>
+                    </div>
                     <div id="comments-items-${post.id}">
-                        ${(post.comments || []).map(c => renderCommentItem(c)).join('')}
-                    </div>
-                    <div class="comment-input-box">
-                        <input type="text" id="comment-input-${post.id}" class="comment-input" placeholder="Write a comment..." onkeydown="handleCommentKey(event, '${post.id}')">
-                        <button class="btn-primary" style="padding: 6px 16px;" onclick="submitComment('${post.id}')">Send</button>
+                        ${(post.comments || []).map(renderCommentItem).join('')}
                     </div>
                 </div>
             `;
+
             return card;
         }
 
-        function renderCommentItem(comment) {
-            const avatarSrc = comment.actorProfilePic && comment.actorProfilePic.startsWith('http')
-                ? comment.actorProfilePic
-                : `/images/${comment.actorProfilePic || 'prof.png'}`;
+        function renderCommentItem(c) {
+            const pic = c.authorPic ? (c.authorPic.startsWith('http') ? c.authorPic : `/images/${c.authorPic}`) : '/images/prof.png';
             return `
-                <div class="comment-item">
-                    <img class="comment-avatar" src="${avatarSrc}" alt="">
-                    <div class="comment-bubble">
-                        <a href="/profile.html?userId=${comment.actorId}" class="comment-author">${comment.actorFullName}</a>
-                        <div class="comment-text">${escapeHtml(comment.commentText)}</div>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px; align-items: flex-start;">
+                    <a href="/profile.html?userId=${c.actorId}">
+                        <img src="${pic}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                    </a>
+                    <div class="li-comment-bubble">
+                        <div style="display: flex; justify-content: space-between;">
+                            <a href="/profile.html?userId=${c.actorId}" style="font-weight: 700; font-size: 12px; color: #fff; text-decoration: none;">${escapeHtml(c.actorFullName)}</a>
+                            <span style="font-size: 10px; color: var(--li-text-muted);">${c.timeAgo || 'Recently'}</span>
+                        </div>
+                        <div style="font-size: 13px; color: var(--li-text-primary); margin-top: 4px;">${escapeHtml(c.commentText)}</div>
                     </div>
                 </div>
             `;
-        }
-
-        async function publishPost() {
-            const content = document.getElementById('postContentInput').value.trim();
-            if (!content) {
-                showToast('Please write something to post.', true);
-                return;
-            }
-            const postType = parseInt(document.getElementById('postTypeSelect').value);
-            const privacy = parseInt(document.getElementById('postPrivacySelect').value);
-
-            try {
-                const res = await API.createPost(content, postType, privacy);
-                if (res.success) {
-                    showToast('Post published!');
-                    document.getElementById('postContentInput').value = '';
-                    loadFeed();
-                }
-            } catch (err) {
-                showToast(err.message, true);
-            }
         }
 
         async function toggleLike(postId, currentlyLiked) {
             if (!currentUser) return redirectToLogin();
+            const btn = document.getElementById(`like-btn-${postId}`);
+            const numSpan = document.getElementById(`likes-num-${postId}`);
+            let count = parseInt(numSpan.innerText) || 0;
+
+            if (currentlyLiked) {
+                btn.classList.remove('liked');
+                btn.innerHTML = '<i class="fa-regular fa-thumbs-up"></i> Like';
+                btn.onclick = () => toggleLike(postId, false);
+                numSpan.innerText = Math.max(0, count - 1);
+            } else {
+                btn.classList.add('liked');
+                btn.innerHTML = '<i class="fa-solid fa-thumbs-up"></i> Like';
+                btn.onclick = () => toggleLike(postId, true);
+                numSpan.innerText = count + 1;
+            }
+
             try {
-                await API.reactToPost(postId, currentlyLiked ? 0 : 1);
-                loadFeed();
+                await API.reactToPost(postId, 1);
             } catch (err) {
                 showToast(err.message, true);
             }
@@ -442,17 +866,27 @@
 
         async function toggleDislike(postId, currentlyDisliked) {
             if (!currentUser) return redirectToLogin();
+            const btn = document.getElementById(`dislike-btn-${postId}`);
+            if (currentlyDisliked) {
+                btn.classList.remove('disliked');
+                btn.innerHTML = '<i class="fa-regular fa-thumbs-down"></i> Pass';
+                btn.onclick = () => toggleDislike(postId, false);
+            } else {
+                btn.classList.add('disliked');
+                btn.innerHTML = '<i class="fa-solid fa-thumbs-down"></i> Pass';
+                btn.onclick = () => toggleDislike(postId, true);
+            }
+
             try {
-                await API.reactToPost(postId, currentlyDisliked ? 0 : 2);
-                loadFeed();
+                await API.reactToPost(postId, 2);
             } catch (err) {
                 showToast(err.message, true);
             }
         }
 
         function toggleComments(postId) {
-            const section = document.getElementById(`comments-${postId}`);
-            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+            const drawer = document.getElementById(`comments-${postId}`);
+            drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
         }
 
         async function submitComment(postId) {
@@ -465,9 +899,9 @@
                 const res = await API.addComment(postId, text);
                 if (res.success) {
                     input.value = '';
-                    const container = document.getElementById(`comments-items-${postId}`);
-                    container.innerHTML += renderCommentItem(res.data);
-                    showToast('Comment posted!');
+                    const list = document.getElementById(`comments-items-${postId}`);
+                    list.innerHTML += renderCommentItem(res.data);
+                    showToast('Comment published!');
                 }
             } catch (err) {
                 showToast(err.message, true);
@@ -482,10 +916,73 @@
             if (!confirm('Are you sure you want to delete this post?')) return;
             try {
                 await API.deletePost(postId);
-                showToast('Post deleted.');
                 document.getElementById(`post-${postId}`)?.remove();
+                showToast('Post removed.');
             } catch (err) {
                 showToast(err.message, true);
+            }
+        }
+
+        function copyPostLink(postId) {
+            const url = `${window.location.origin}/index.html#post-${postId}`;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Post link copied to clipboard!');
+            }).catch(() => {
+                showToast('Link ready: ' + url);
+            });
+        }
+
+        async function loadSuggestions() {
+            try {
+                const res = await API.getSuggestions();
+                const list = document.getElementById('suggestedUsersList');
+                if (!res || !res.data || res.data.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; padding: 12px; color: var(--li-text-muted); font-size: 12px;">No suggestions right now.</p>';
+                    return;
+                }
+                list.innerHTML = '';
+                res.data.slice(0, 4).forEach(u => {
+                    const row = document.createElement('div');
+                    row.className = 'li-suggest-row';
+                    const pic = u.profilePic ? (u.profilePic.startsWith('http') ? u.profilePic : `/images/${u.profilePic}`) : '/images/prof.png';
+                    row.innerHTML = `
+                        <a href="/profile.html?userId=${u.id}">
+                            <img src="${pic}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                        </a>
+                        <div style="flex: 1; min-width: 0;">
+                            <a href="/profile.html?userId=${u.id}" style="font-weight: 700; font-size: 13px; color: #fff; text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(u.fullName)}</a>
+                            <div style="font-size: 11px; color: var(--li-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(u.place || 'Bangladesh')}</div>
+                            <button id="connect-btn-${u.id}" onclick="connectUser('${u.id}')" class="li-btn-secondary" style="padding: 3px 12px; font-size: 11px; margin-top: 6px;">
+                                <i class="fa-solid fa-user-plus"></i> Connect
+                            </button>
+                        </div>
+                    `;
+                    list.appendChild(row);
+                });
+            } catch (err) {}
+        }
+
+        async function connectUser(userId) {
+            if (!currentUser) return redirectToLogin();
+            const btn = document.getElementById(`connect-btn-${userId}`);
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-clock"></i> Sent';
+            try {
+                await API.sendCoworkerRequest(userId);
+                showToast('Connection request sent!');
+            } catch (err) {
+                showToast(err.message, true);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Connect';
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await API.logout();
+                window.location.href = '/login.html';
+            } catch (err) {
+                window.location.href = '/login.html';
             }
         }
 

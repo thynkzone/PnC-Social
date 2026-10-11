@@ -2,231 +2,361 @@
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
-    <title>Profile - P&C</title>
+    <title>Profile - P&amp;C</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" type="text/css" href="/css-pages.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
-        :root {
-            --bg-main: #18181b;
-            --bg-card: rgba(36, 37, 46, 0.85);
-            --bg-tertiary: #23232a;
-            --accent-primary: #1da1f2;
-            --accent-danger: #e0245e;
-            --text-primary: #fff;
-            --text-secondary: #b0b3b8;
-            --text-muted: #888;
-            --border-primary: #2c2f36;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            margin: 0;
-            min-height: 100vh;
-        }
-        .topnav {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-primary);
-            padding: 10px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--accent-primary);
-            font-weight: 700;
-            font-size: 1.2rem;
-        }
-        .nav-logo img { width: 36px; height: 36px; }
-        .nav-links { display: flex; align-items: center; gap: 20px; }
-        .nav-link { color: var(--text-secondary); font-size: 1.2rem; text-decoration: none; }
-        .nav-link:hover, .nav-link.active { color: var(--accent-primary); }
         .profile-container {
-            max-width: 720px;
-            margin: 0 auto 40px auto;
+            max-width: 900px;
+            margin: 20px auto 40px;
             padding: 0 16px;
         }
-        .cover-photo {
-            width: 100%;
-            height: 180px;
-            background: #27272a;
-            border-radius: 0 0 12px 12px;
-            object-fit: cover;
-        }
-        .profile-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-primary);
-            border-radius: 12px;
-            padding: 24px;
-            margin-top: -60px;
+
+        /* LinkedIn Cover & Avatar Header */
+        .profile-header-card {
             position: relative;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            overflow: visible;
         }
-        .avatar-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 16px;
+        .cover-photo-wrap {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #0a66c2 0%, #004182 60%, #1d2226 100%);
+            border-top-left-radius: var(--li-radius-lg);
+            border-top-right-radius: var(--li-radius-lg);
+            overflow: hidden;
         }
-        .avatar-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid var(--bg-main);
+        .cover-photo-img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            background: #333;
         }
-        .action-btns {
-            display: flex;
-            gap: 10px;
-        }
-        .btn-action {
-            background: var(--accent-primary);
+        .cover-edit-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
             color: #fff;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--li-radius-pill);
+            padding: 6px 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            text-decoration: none;
-            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s ease;
         }
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-primary);
+        .cover-edit-btn:hover {
+            background: rgba(0, 0, 0, 0.85);
         }
-        .user-name {
-            font-size: 1.5rem;
+
+        .avatar-edit-wrap {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin-top: -80px;
+            margin-left: 24px;
+            display: inline-block;
+        }
+        .avatar-img-main {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid var(--li-bg-surface);
+            object-fit: cover;
+            background: var(--li-bg-surface);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        }
+        .avatar-edit-btn {
+            position: absolute;
+            right: 4px;
+            bottom: 6px;
+            background: var(--li-primary);
+            color: #fff;
+            border: 3px solid var(--li-bg-surface);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: background 0.15s;
+        }
+        .avatar-edit-btn:hover {
+            background: var(--li-primary-hover);
+        }
+
+        .profile-body {
+            padding: 12px 24px 24px;
+        }
+        .profile-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .profile-headline-area {
+            flex: 1;
+            min-width: 260px;
+        }
+        .profile-full-name {
+            font-size: 24px;
             font-weight: 700;
+            color: #fff;
             margin-bottom: 4px;
         }
-        .rank-badge {
-            display: inline-block;
-            background: rgba(29, 161, 242, 0.15);
-            color: var(--accent-primary);
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.8rem;
+        .profile-badge-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .profile-rank-tag {
+            background: var(--li-primary-soft);
+            color: var(--li-primary);
+            padding: 3px 10px;
+            border-radius: 14px;
+            font-size: 12px;
             font-weight: 600;
+        }
+        .profile-location-text {
+            color: var(--li-text-secondary);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .profile-about-text {
+            color: var(--li-text-primary);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 14px;
+            white-space: pre-wrap;
+        }
+
+        /* Analytics / Stats Bar */
+        .profile-analytics-bar {
+            display: flex;
+            border-top: 1px solid var(--li-border-light);
+            margin-top: 20px;
+            padding-top: 16px;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+        .profile-stat-box {
+            text-align: left;
+        }
+        .profile-stat-num {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .profile-stat-label {
+            font-size: 12px;
+            color: var(--li-text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Timeline / Activity Section */
+        .activity-card {
+            padding: 20px 24px;
+        }
+        .activity-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .activity-item {
+            border: 1px solid var(--li-border-light);
+            border-radius: var(--li-radius-md);
+            background: var(--li-bg-elevated);
+            padding: 16px;
             margin-bottom: 12px;
         }
-        .user-bio {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
+        .activity-meta {
+            font-size: 12px;
+            color: var(--li-text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .activity-body {
+            font-size: 14px;
+            color: var(--li-text-primary);
             line-height: 1.5;
-            margin-bottom: 16px;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
         }
-        .user-meta {
+        .activity-media {
+            width: 100%;
+            max-height: 380px;
+            object-fit: cover;
+            border-radius: var(--li-radius-sm);
+            margin-bottom: 10px;
+        }
+        .activity-reactions {
+            font-size: 12px;
+            color: var(--li-text-secondary);
             display: flex;
-            gap: 20px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 20px;
-        }
-        .stats-bar {
-            display: flex;
-            gap: 28px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border-primary);
-        }
-        .stat-item {
-            text-align: center;
-        }
-        .stat-num {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        .timeline-section {
-            margin-top: 24px;
-        }
-        .timeline-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-        .post-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            border: 1px solid var(--border-primary);
-            padding: 18px;
-            margin-bottom: 16px;
+            gap: 16px;
         }
     </style>
 </head>
 <body>
 
-    <nav class="topnav">
-        <a href="/index.html" class="nav-logo">
-            <img src="/icon/p&c.png" alt="P&C Logo">
-            <span>People &amp; Culture</span>
-        </a>
-        <div class="nav-links">
-            <a href="/index.html" class="nav-link"><i class="fa-solid fa-house"></i></a>
-            <a href="/following.html" class="nav-link"><i class="fa-solid fa-user-group"></i></a>
-            <a href="/post-updates.html" class="nav-link"><i class="fa-solid fa-bell"></i></a>
-            <a href="/settings.html" class="nav-link"><i class="fa-solid fa-gear"></i></a>
+    <!-- LinkedIn Top Navbar (Logo Only for branding) -->
+    <header class="li-navbar">
+        <div class="li-nav-inner">
+            <div class="li-nav-left">
+                <!-- Only logo for title/brand, no text -->
+                <a href="/index.html" class="li-logo-link" title="P&amp;C Home">
+                    <img src="/icon/p&c.png" alt="P&amp;C" class="li-logo-img">
+                </a>
+                
+                <div class="li-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalNavSearch" class="li-search-input" placeholder="Search people, topics..." onkeydown="if(event.key==='Enter') window.location.href='/search-user.html?q='+encodeURIComponent(this.value)">
+                </div>
+            </div>
+
+            <nav class="li-nav-menu">
+                <a href="/index.html" class="li-nav-item" title="Home Feed">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+                <a href="/following.html" class="li-nav-item" title="My Network">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>My Network</span>
+                </a>
+                <a href="/advertisements.html" class="li-nav-item" title="Ads &amp; Campaigns">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Ads</span>
+                </a>
+                <a href="/post-updates.html" class="li-nav-item" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                
+                <!-- Authenticated User Dropdown -->
+                <div class="li-nav-item" id="navMeItem" style="display: none;" onclick="toggleMeDropdown(event)">
+                    <img id="navAvatar" class="li-nav-avatar" src="/images/prof.png" alt="Profile">
+                    <span style="display: flex; align-items: center; gap: 2px;">Me <i class="fa-solid fa-caret-down" style="font-size: 9px;"></i></span>
+
+                    <div class="li-dropdown-menu" id="meDropdownMenu">
+                        <div style="padding: 10px 16px; display: flex; gap: 10px; align-items: center;">
+                            <img id="menuAvatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" src="/images/prof.png" alt="User">
+                            <div style="min-width: 0;">
+                                <div id="menuName" style="font-weight: 700; font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                                <div id="menuHeadline" style="font-size: 11px; color: var(--li-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Professional</div>
+                            </div>
+                        </div>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="/profile.html" id="menuProfileLink" class="li-dropdown-item"><i class="fa-solid fa-user"></i> View Profile</a>
+                        <a href="/view-all-requests.html" class="li-dropdown-item"><i class="fa-solid fa-user-clock"></i> Pending Requests</a>
+                        <a href="/settings.html" class="li-dropdown-item"><i class="fa-solid fa-gear"></i> Settings &amp; Privacy</a>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="javascript:void(0)" onclick="handleLogout()" class="li-dropdown-item" style="color: var(--li-danger);"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+                    </div>
+                </div>
+
+                <a href="/login.html" id="navLoginBtn" class="li-btn-primary" style="margin-left: 8px; font-size: 13px; padding: 6px 16px;">
+                    Sign In
+                </a>
+            </nav>
         </div>
-    </nav>
+    </header>
 
     <div class="profile-container">
-        <img id="coverImg" class="cover-photo" src="/images/prof.png" alt="Cover">
 
-        <div class="profile-card">
-            <div class="avatar-row">
-                <img id="profileAvatar" class="avatar-img" src="/images/prof.png" alt="Profile avatar">
-                <div class="action-btns" id="actionButtons"></div>
+        <!-- Profile Hero Card -->
+        <div class="li-card profile-header-card">
+            <!-- Cover Photo -->
+            <div class="cover-photo-wrap">
+                <img id="coverImg" class="cover-photo-img" src="/images/prof.png" alt="Cover photo">
+                <button id="coverUploadBtn" type="button" class="cover-edit-btn" onclick="document.getElementById('coverFileInput').click()">
+                    <i class="fa-solid fa-camera"></i> Change cover
+                </button>
+                <input type="file" id="coverFileInput" accept="image/*" style="display: none;" onchange="handleCoverUpload(event)">
             </div>
 
-            <div class="user-name" id="profileName">Loading...</div>
-            <div class="rank-badge" id="profileRank">Rank</div>
-            <div class="user-bio" id="profileAbout"></div>
+            <!-- Avatar & Action Buttons Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 24px; position: relative;">
+                <div class="avatar-edit-wrap">
+                    <img id="profileAvatar" class="avatar-img-main" src="/images/prof.png" alt="Profile avatar">
+                    <button id="avatarUploadBtn" type="button" class="avatar-edit-btn" onclick="document.getElementById('avatarFileInput').click()">
+                        <i class="fa-solid fa-camera"></i>
+                    </button>
+                    <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)">
+                </div>
 
-            <div class="user-meta">
-                <span id="profilePlace"><i class="fa-solid fa-location-dot"></i> Workplace</span>
-                <span id="profileCountry"><i class="fa-solid fa-globe"></i> Country</span>
+                <div id="actionButtons" style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;"></div>
             </div>
 
-            <div class="stats-bar">
-                <div class="stat-item">
-                    <div class="stat-num" id="statPosts">0</div>
-                    <div class="stat-label">Posts</div>
+            <!-- Profile Info Body -->
+            <div class="profile-body">
+                <div class="profile-top-row">
+                    <div class="profile-headline-area">
+                        <h1 class="profile-full-name" id="profileName">Loading Profile...</h1>
+                        <div class="profile-badge-row">
+                            <span class="profile-rank-tag" id="profileRank">Novice</span>
+                        </div>
+                        <div class="profile-location-text">
+                            <span id="profilePlace"><i class="fa-solid fa-location-dot"></i> Workplace</span>
+                            <span>&bull;</span>
+                            <span id="profileCountry"><i class="fa-solid fa-globe"></i> Country</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-num" id="statCoworkers">0</div>
-                    <div class="stat-label">Co-workers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-num" id="statFollowers">0</div>
-                    <div class="stat-label">Followers</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-num" id="statFollowing">0</div>
-                    <div class="stat-label">Following</div>
+
+                <div class="profile-about-text" id="profileAbout"></div>
+
+                <!-- Stats Bar -->
+                <div class="profile-analytics-bar">
+                    <div class="profile-stat-box">
+                        <div class="profile-stat-num" id="statPosts">0</div>
+                        <div class="profile-stat-label">Posts</div>
+                    </div>
+                    <div class="profile-stat-box">
+                        <div class="profile-stat-num" id="statCoworkers">0</div>
+                        <div class="profile-stat-label">Co-workers</div>
+                    </div>
+                    <div class="profile-stat-box">
+                        <div class="profile-stat-num" id="statFollowers">0</div>
+                        <div class="profile-stat-label">Followers</div>
+                    </div>
+                    <div class="profile-stat-box">
+                        <div class="profile-stat-num" id="statFollowing">0</div>
+                        <div class="profile-stat-label">Following</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="timeline-section">
-            <div class="timeline-title">Posts &amp; Contributions</div>
+        <!-- Activity & Posts Card -->
+        <div class="li-card activity-card">
+            <div class="activity-title">
+                <span>Activity &amp; Contributions</span>
+            </div>
             <div id="userTimeline">
-                <p style="color: var(--text-muted); text-align: center;">Loading posts...</p>
+                <p style="color: var(--li-text-muted); text-align: center; padding: 30px;">Loading posts...</p>
             </div>
         </div>
+
     </div>
 
     <script src="/js/api.js"></script>
@@ -242,6 +372,7 @@
                 const meRes = await API.getCurrentUser();
                 if (meRes && meRes.success) {
                     currentAuthUser = meRes.data;
+                    setupNavbarMe(currentAuthUser);
                     if (!viewedUserId) viewedUserId = currentAuthUser.id;
                 }
             } catch (err) {}
@@ -255,6 +386,39 @@
             await loadUserPosts(viewedUserId);
         });
 
+        function setupNavbarMe(user) {
+            document.getElementById('navLoginBtn').style.display = 'none';
+            const navMe = document.getElementById('navMeItem');
+            navMe.style.display = 'flex';
+            if (user.profilePic) {
+                const pic = user.profilePic.startsWith('http') ? user.profilePic : `/images/${user.profilePic}`;
+                document.getElementById('navAvatar').src = pic;
+                document.getElementById('menuAvatar').src = pic;
+            }
+            document.getElementById('menuName').innerText = user.fullName || 'User';
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} • ${user.rating || 0} pts`;
+            document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
+        }
+
+        function toggleMeDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('meDropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', () => {
+            const menu = document.getElementById('meDropdownMenu');
+            if (menu) menu.classList.remove('show');
+        });
+
+        async function handleLogout() {
+            try {
+                await API.logout();
+            } finally {
+                window.location.href = '/login.html';
+            }
+        }
+
         async function loadProfile(userId) {
             try {
                 const res = await API.getUserProfile(userId);
@@ -262,7 +426,7 @@
 
                 document.getElementById('profileName').innerText = p.fullName || 'User';
                 document.getElementById('profileRank').innerText = `${p.rank || 'Novice'} • ${p.rating || 0} Points`;
-                document.getElementById('profileAbout').innerText = p.about || 'No bio yet.';
+                document.getElementById('profileAbout').innerText = p.about || 'No bio specified yet.';
                 document.getElementById('profilePlace').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${p.place || 'Remote'}`;
                 document.getElementById('profileCountry').innerHTML = `<i class="fa-solid fa-globe"></i> ${p.country || 'Global'}`;
 
@@ -287,33 +451,40 @@
         function renderActionButtons(p) {
             const container = document.getElementById('actionButtons');
             container.innerHTML = '';
+            const coverBtn = document.getElementById('coverUploadBtn');
+            const avatarBtn = document.getElementById('avatarUploadBtn');
 
             if (currentAuthUser && currentAuthUser.id === viewedUserId) {
-                container.innerHTML = `<a href="/settings.html" class="btn-action btn-secondary"><i class="fa-solid fa-gear"></i> Edit Profile</a>`;
+                if (coverBtn) coverBtn.style.display = 'inline-flex';
+                if (avatarBtn) avatarBtn.style.display = 'inline-flex';
+                container.innerHTML = `<a href="/settings.html" class="li-btn-secondary"><i class="fa-solid fa-gear"></i> Edit Profile</a>`;
                 return;
             }
 
+            if (coverBtn) coverBtn.style.display = 'none';
+            if (avatarBtn) avatarBtn.style.display = 'none';
+
             if (!currentAuthUser) {
-                container.innerHTML = `<a href="/login.html" class="btn-action">Follow</a>`;
+                container.innerHTML = `<a href="/login.html" class="li-btn-primary">Sign in to connect</a>`;
                 return;
             }
 
             // Coworker button
             if (p.coworker) {
-                container.innerHTML += `<button class="btn-action btn-secondary" onclick="disconnectCoworker()"><i class="fa-solid fa-user-check"></i> Co-worker</button>`;
+                container.innerHTML += `<button class="li-btn-secondary" onclick="disconnectCoworker()"><i class="fa-solid fa-user-check"></i> Co-worker</button>`;
             } else if (p.requestSent) {
-                container.innerHTML += `<button class="btn-action btn-secondary" onclick="cancelRequest()"><i class="fa-solid fa-clock"></i> Request Sent</button>`;
+                container.innerHTML += `<button class="li-btn-secondary" onclick="cancelRequest()"><i class="fa-solid fa-clock"></i> Request Sent</button>`;
             } else if (p.requestReceived) {
-                container.innerHTML += `<button class="btn-action" onclick="acceptRequest()"><i class="fa-solid fa-user-plus"></i> Accept Request</button>`;
+                container.innerHTML += `<button class="li-btn-primary" onclick="acceptRequest()"><i class="fa-solid fa-user-plus"></i> Accept Request</button>`;
             } else {
-                container.innerHTML += `<button class="btn-action" onclick="sendRequest()"><i class="fa-solid fa-user-plus"></i> Add Co-worker</button>`;
+                container.innerHTML += `<button class="li-btn-primary" onclick="sendRequest()"><i class="fa-solid fa-user-plus"></i> Add Co-worker</button>`;
             }
 
             // Follow button
             if (p.following) {
-                container.innerHTML += `<button class="btn-action btn-secondary" onclick="unfollow()"><i class="fa-solid fa-check"></i> Following</button>`;
+                container.innerHTML += `<button class="li-btn-secondary" onclick="unfollow()"><i class="fa-solid fa-check"></i> Following</button>`;
             } else {
-                container.innerHTML += `<button class="btn-action" onclick="follow()"><i class="fa-solid fa-plus"></i> Follow</button>`;
+                container.innerHTML += `<button class="li-btn-secondary" onclick="follow()"><i class="fa-solid fa-plus"></i> Follow</button>`;
             }
         }
 
@@ -324,23 +495,26 @@
                 container.innerHTML = '';
 
                 if (!res.data || !res.data.content || res.data.content.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 30px;">No posts published yet.</p>';
+                    container.innerHTML = '<p style="text-align: center; color: var(--li-text-muted); padding: 30px;">No posts published yet.</p>';
                     return;
                 }
 
                 res.data.content.forEach(post => {
-                    const postCard = document.createElement('div');
-                    postCard.className = 'post-card';
-                    postCard.innerHTML = `
-                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">${post.timeAgo || 'Recently'}</div>
-                        <div style="white-space: pre-wrap; margin-bottom: 10px;">${post.content}</div>
-                        ${post.imageUrl ? `<img src="${post.imageUrl}" style="max-width: 100%; border-radius: 8px; margin-bottom: 8px;" alt="">` : ''}
-                        <div style="color: var(--text-muted); font-size: 0.85rem;">
-                            <i class="fa-solid fa-heart"></i> ${post.likesCount || 0} &nbsp; • &nbsp;
-                            <i class="fa-solid fa-comment"></i> ${post.commentsCount || 0}
+                    const item = document.createElement('div');
+                    item.className = 'activity-item';
+                    item.innerHTML = `
+                        <div class="activity-meta">
+                            <i class="fa-regular fa-clock"></i> ${post.timeAgo || 'Recently'}
+                            ${post.isFact ? '<span style="background: rgba(16,185,129,0.15); color: #10b981; padding: 1px 6px; border-radius: 8px; font-weight: 600; font-size: 11px;">Fact</span>' : ''}
+                        </div>
+                        <div class="activity-body">${post.content}</div>
+                        ${post.imageUrl ? `<img src="${post.imageUrl}" class="activity-media" alt="Post media">` : ''}
+                        <div class="activity-reactions">
+                            <span><i class="fa-solid fa-thumbs-up" style="color: var(--li-primary);"></i> ${post.likesCount || 0} Likes</span>
+                            <span><i class="fa-solid fa-comment" style="color: var(--li-text-secondary);"></i> ${post.commentsCount || 0} Comments</span>
                         </div>
                     `;
-                    container.appendChild(postCard);
+                    container.appendChild(item);
                 });
             } catch (err) {}
         }
@@ -380,6 +554,44 @@
             await API.unfollow(viewedUserId);
             showToast('Unfollowed.');
             loadProfile(viewedUserId);
+        }
+
+        async function handleAvatarUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            try {
+                showToast('Uploading profile picture...');
+                const uploadRes = await API.uploadImage(file, 'profiles');
+                if (!uploadRes || !uploadRes.downloadUrl) {
+                    throw new Error('Upload failed: No image URL returned');
+                }
+                await API.updateProfilePicture(uploadRes.downloadUrl);
+                document.getElementById('profileAvatar').src = uploadRes.downloadUrl;
+                showToast('Profile picture updated!');
+            } catch (err) {
+                showToast(err.message || 'Failed to upload profile picture', true);
+            } finally {
+                event.target.value = '';
+            }
+        }
+
+        async function handleCoverUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            try {
+                showToast('Uploading cover photo...');
+                const uploadRes = await API.uploadImage(file, 'covers');
+                if (!uploadRes || !uploadRes.downloadUrl) {
+                    throw new Error('Upload failed: No image URL returned');
+                }
+                await API.updateBackgroundPicture(uploadRes.downloadUrl);
+                document.getElementById('coverImg').src = uploadRes.downloadUrl;
+                showToast('Cover photo updated!');
+            } catch (err) {
+                showToast(err.message || 'Failed to upload cover photo', true);
+            } finally {
+                event.target.value = '';
+            }
         }
     </script>
 </body>

@@ -2,135 +2,240 @@
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
-    <title>Find People - P&C</title>
+    <title>Search People - P&amp;C</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
-        :root {
-            --bg-main: #18181b;
-            --bg-card: rgba(36, 37, 46, 0.85);
-            --bg-tertiary: #23232a;
-            --accent-primary: #1da1f2;
-            --text-primary: #fff;
-            --text-secondary: #b0b3b8;
-            --border-primary: #2c2f36;
+        .search-container {
+            max-width: 760px;
+            margin: 24px auto 40px;
+            padding: 0 16px;
         }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            margin: 0;
-            min-height: 100vh;
+
+        .search-panel {
+            padding: 20px;
+            margin-bottom: 16px;
         }
-        .topnav {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-primary);
-            padding: 10px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--accent-primary); font-weight: 700; }
-        .nav-logo img { width: 36px; height: 36px; }
-        .container { max-width: 600px; margin: 24px auto; padding: 0 16px; }
-        .search-box {
+
+        .search-form-row {
             display: flex;
             gap: 10px;
-            margin-bottom: 24px;
         }
-        .search-input {
-            flex: 1;
-            background: var(--bg-card);
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            padding: 12px 16px;
-            color: var(--text-primary);
-            font-size: 1rem;
-            outline: none;
-        }
-        .search-input:focus { border-color: var(--accent-primary); }
-        .btn-search {
-            background: var(--accent-primary);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 0 20px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .user-item {
-            background: var(--bg-card);
-            border: 1px solid var(--border-primary);
-            border-radius: 12px;
-            padding: 14px 18px;
+
+        .search-result-card {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--li-border-light);
             display: flex;
             align-items: center;
-            gap: 14px;
-            margin-bottom: 12px;
+            gap: 16px;
+            transition: background 0.15s ease;
         }
-        .user-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
-        .user-info { flex: 1; }
-        .user-name { font-weight: 600; text-decoration: none; color: var(--text-primary); }
-        .user-meta { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+        .search-result-card:hover {
+            background: var(--li-bg-hover);
+        }
+        .search-result-card:last-child {
+            border-bottom: none;
+        }
+
+        .search-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--li-border);
+        }
+        .search-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .search-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+        .search-name:hover {
+            color: var(--li-primary);
+            text-decoration: underline;
+        }
+        .search-meta {
+            font-size: 12px;
+            color: var(--li-text-secondary);
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
 
-    <nav class="topnav">
-        <a href="/index.html" class="nav-logo">
-            <img src="/icon/p&c.png" alt="P&C">
-            <span>People &amp; Culture</span>
-        </a>
-        <a href="/index.html" style="color: var(--text-secondary);"><i class="fa-solid fa-house"></i></a>
-    </nav>
+    <!-- LinkedIn Top Navbar (Logo Only for branding) -->
+    <header class="li-navbar">
+        <div class="li-nav-inner">
+            <div class="li-nav-left">
+                <!-- Only logo for title/brand, no text -->
+                <a href="/index.html" class="li-logo-link" title="P&amp;C Home">
+                    <img src="/icon/p&c.png" alt="P&amp;C" class="li-logo-img">
+                </a>
+                
+                <div class="li-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalNavSearch" class="li-search-input" placeholder="Search people, topics..." onkeydown="if(event.key==='Enter') executeSearch(this.value)">
+                </div>
+            </div>
 
-    <div class="container">
-        <h1 style="font-size: 1.4rem; margin-bottom: 16px;">Search People</h1>
-        <form class="search-box" onsubmit="handleSearch(event)">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search by name, role, or workplace..." autofocus>
-            <button type="submit" class="btn-search">Search</button>
-        </form>
+            <nav class="li-nav-menu">
+                <a href="/index.html" class="li-nav-item" title="Home Feed">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+                <a href="/following.html" class="li-nav-item" title="My Network">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>My Network</span>
+                </a>
+                <a href="/advertisements.html" class="li-nav-item" title="Ads &amp; Campaigns">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Ads</span>
+                </a>
+                <a href="/post-updates.html" class="li-nav-item" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                
+                <!-- Authenticated User Dropdown -->
+                <div class="li-nav-item" id="navMeItem" style="display: none;" onclick="toggleMeDropdown(event)">
+                    <img id="navAvatar" class="li-nav-avatar" src="/images/prof.png" alt="Profile">
+                    <span style="display: flex; align-items: center; gap: 2px;">Me <i class="fa-solid fa-caret-down" style="font-size: 9px;"></i></span>
 
-        <div id="resultsList">
-            <p style="text-align: center; color: var(--text-secondary);">Enter a name or keyword to find colleagues.</p>
+                    <div class="li-dropdown-menu" id="meDropdownMenu">
+                        <div style="padding: 10px 16px; display: flex; gap: 10px; align-items: center;">
+                            <img id="menuAvatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" src="/images/prof.png" alt="User">
+                            <div style="min-width: 0;">
+                                <div id="menuName" style="font-weight: 700; font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                                <div id="menuHeadline" style="font-size: 11px; color: var(--li-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Professional</div>
+                            </div>
+                        </div>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="/profile.html" id="menuProfileLink" class="li-dropdown-item"><i class="fa-solid fa-user"></i> View Profile</a>
+                        <a href="/view-all-requests.html" class="li-dropdown-item"><i class="fa-solid fa-user-clock"></i> Pending Requests</a>
+                        <a href="/settings.html" class="li-dropdown-item"><i class="fa-solid fa-gear"></i> Settings &amp; Privacy</a>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="javascript:void(0)" onclick="handleLogout()" class="li-dropdown-item" style="color: var(--li-danger);"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+                    </div>
+                </div>
+
+                <a href="/login.html" id="navLoginBtn" class="li-btn-primary" style="margin-left: 8px; font-size: 13px; padding: 6px 16px;">
+                    Sign In
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="search-container">
+        <div class="li-card search-panel">
+            <h1 style="font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 12px;">Search Network</h1>
+            <form class="search-form-row" onsubmit="handleSearch(event)">
+                <input type="text" id="searchInput" class="li-input" placeholder="Search by name, position, or company..." style="font-size: 15px;" autofocus>
+                <button type="submit" class="li-btn-primary" style="padding: 0 24px; font-size: 14px;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search
+                </button>
+            </form>
+        </div>
+
+        <div class="li-card" id="resultsContainer">
+            <div id="resultsList">
+                <p style="text-align: center; color: var(--li-text-muted); padding: 40px;">Enter a keyword to discover colleagues and professionals.</p>
+            </div>
         </div>
     </div>
 
     <script src="/js/api.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const meRes = await API.getCurrentUser();
+                if (meRes && meRes.success) {
+                    setupNavbarMe(meRes.data);
+                }
+            } catch (err) {}
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            if (query) {
+                document.getElementById('searchInput').value = query;
+                executeSearch(query);
+            }
+        });
+
+        function setupNavbarMe(user) {
+            document.getElementById('navLoginBtn').style.display = 'none';
+            const navMe = document.getElementById('navMeItem');
+            navMe.style.display = 'flex';
+            if (user.profilePic) {
+                const pic = user.profilePic.startsWith('http') ? user.profilePic : `/images/${user.profilePic}`;
+                document.getElementById('navAvatar').src = pic;
+                document.getElementById('menuAvatar').src = pic;
+            }
+            document.getElementById('menuName').innerText = user.fullName || 'User';
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} • ${user.rating || 0} pts`;
+            document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
+        }
+
+        function toggleMeDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('meDropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', () => {
+            const menu = document.getElementById('meDropdownMenu');
+            if (menu) menu.classList.remove('show');
+        });
+
+        async function handleLogout() {
+            try {
+                await API.logout();
+            } finally {
+                window.location.href = '/login.html';
+            }
+        }
+
         async function handleSearch(e) {
             e.preventDefault();
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) return;
+            const q = document.getElementById('searchInput').value.trim();
+            if (q) executeSearch(q);
+        }
 
+        async function executeSearch(query) {
             const list = document.getElementById('resultsList');
-            list.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Searching...</p>';
+            list.innerHTML = '<p style="text-align: center; color: var(--li-text-muted); padding: 40px;">Searching...</p>';
 
             try {
                 const res = await API.searchUsers(query);
                 list.innerHTML = '';
                 if (!res.data || res.data.length === 0) {
-                    list.innerHTML = `<p style="text-align: center; color: var(--text-secondary); padding: 30px;">No people found matching "${query}".</p>`;
+                    list.innerHTML = `<p style="text-align: center; color: var(--li-text-muted); padding: 40px;">No professionals found matching "<strong>${query}</strong>".</p>`;
                     return;
                 }
 
                 res.data.forEach(u => {
                     const avatar = u.profilePic && u.profilePic.startsWith('http') ? u.profilePic : `/images/${u.profilePic || 'prof.png'}`;
                     const item = document.createElement('div');
-                    item.className = 'user-item';
+                    item.className = 'search-result-card';
                     item.innerHTML = `
-                        <img class="user-avatar" src="${avatar}" alt="">
-                        <div class="user-info">
-                            <a href="/profile.html?userId=${u.id}" class="user-name">${u.fullName}</a>
-                            <div class="user-meta">${u.rank || 'Member'} • ${u.place || 'Remote'}</div>
+                        <img class="search-avatar" src="${avatar}" alt="${u.fullName || 'User'}">
+                        <div class="search-info">
+                            <a href="/profile.html?userId=${u.id}" class="search-name">${u.fullName}</a>
+                            <div class="search-meta">${u.rank || 'Member'} &bull; ${u.place || 'Remote'}</div>
                         </div>
-                        <a href="/profile.html?userId=${u.id}" style="color: var(--accent-primary); font-size: 0.9rem; text-decoration: none; font-weight: 500;">View Profile</a>
+                        <a href="/profile.html?userId=${u.id}" class="li-btn-secondary" style="font-size: 13px; padding: 6px 16px;">
+                            View Profile
+                        </a>
                     `;
                     list.appendChild(item);
                 });
             } catch (err) {
-                list.innerHTML = `<p style="color: #e0245e; text-align: center;">${err.message}</p>`;
+                list.innerHTML = `<p style="color: var(--li-danger); text-align: center; padding: 30px;">${err.message}</p>`;
             }
         }
     </script>

@@ -2,153 +2,67 @@
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
-    <title>Create Account - P&C</title>
+    <title>Join P&amp;C</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-        :root {
-            --bg-main: #18181b;
-            --bg-card: rgba(36, 37, 46, 0.9);
-            --accent-primary: #1da1f2;
-            --accent-secondary: #0a8cd8;
-            --accent-danger: #e0245e;
-            --text-primary: #fff;
-            --text-secondary: #b0b3b8;
-            --border-primary: #2c2f36;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-        }
-        body {
-            background: var(--bg-main);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-primary);
-            border-radius: 16px;
-            padding: 40px;
-            width: 100%;
-            max-width: 440px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-        .logo-img {
-            width: 56px;
-            height: 56px;
-            margin-bottom: 16px;
-        }
-        h1 {
-            font-size: 1.6rem;
-            margin-bottom: 8px;
-        }
-        p.subtitle {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin-bottom: 24px;
-        }
-        .form-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-        label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-        input {
-            width: 100%;
-            background: #23232a;
-            border: 1.5px solid var(--border-primary);
-            border-radius: 8px;
-            padding: 12px 14px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        input:focus {
-            border-color: var(--accent-primary);
-        }
-        .btn-submit {
-            width: 100%;
-            background: var(--accent-primary);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 14px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 12px;
-            transition: background 0.2s;
-        }
-        .btn-submit:hover {
-            background: var(--accent-secondary);
-        }
-        .footer-links {
-            margin-top: 24px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-        .footer-links a {
-            color: var(--accent-primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .alert-box {
-            display: none;
-            padding: 10px 14px;
-            background: rgba(224, 36, 94, 0.2);
-            border: 1px solid var(--accent-danger);
-            color: #fff;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 18px;
-            text-align: left;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
 </head>
-<body>
+<body class="li-auth-page">
 
-    <div class="card">
-        <a href="/index.html"><img src="/icon/p&c.png" alt="P&C" class="logo-img"></a>
-        <h1>Create an Account</h1>
-        <p class="subtitle">Join your workplace social community</p>
+    <!-- Top Logo Only for Title / Branding -->
+    <div style="margin-bottom: 24px; text-align: center;">
+        <a href="/index.html" class="li-logo-link" title="Home">
+            <img src="/icon/p&c.png" alt="Logo" style="width: 48px; height: 48px; border-radius: 8px;">
+        </a>
+    </div>
 
-        <div id="alertBox" class="alert-box"></div>
+    <div class="li-auth-card" style="max-width: 440px;">
+        <h1 class="li-auth-title">Make the most of your professional life</h1>
+        <p class="li-auth-subtitle">Join coworkers and industry peers on P&amp;C</p>
+
+        <div id="alertBox" style="display: none; padding: 10px 14px; background: rgba(224, 36, 94, 0.18); border: 1px solid var(--li-danger); color: #ff85a1; border-radius: var(--li-radius-sm); font-size: 13px; margin-bottom: 16px; text-align: left;"></div>
 
         <form id="signupForm" onsubmit="handleSignup(event)">
-            <div class="form-group">
-                <label for="email">Work Email</label>
-                <input type="email" id="email" required placeholder="name@company.com">
+            <div class="li-form-group">
+                <label class="li-label" for="email">Work Email</label>
+                <input type="email" id="email" class="li-input" required autocomplete="email" placeholder="name@company.com">
             </div>
 
-            <div class="form-group">
-                <label for="password">Create Password (min. 8 characters)</label>
-                <input type="password" id="password" minlength="8" required placeholder="••••••••">
+            <div class="li-form-group">
+                <label class="li-label" for="password">Password (8+ characters)</label>
+                <input type="password" id="password" class="li-input" minlength="8" required autocomplete="new-password" placeholder="••••••••">
             </div>
 
-            <div class="form-group">
-                <label for="recoveryCode">Account Recovery Code (remember this)</label>
-                <input type="text" id="recoveryCode" minlength="3" required placeholder="A word or phrase only you know">
+            <div class="li-form-group">
+                <label class="li-label" for="recoveryCode">Security Recovery Code (keep safe)</label>
+                <input type="text" id="recoveryCode" class="li-input" minlength="3" required placeholder="A phrase or word only you know">
             </div>
 
-            <button type="submit" id="submitBtn" class="btn-submit">Continue</button>
+            <p style="font-size: 11px; color: var(--li-text-muted); text-align: left; margin: 12px 0 16px; line-height: 1.4;">
+                By clicking Agree &amp; Join, you agree to P&amp;C's 
+                <a href="/terms-and-conditions.html" style="color: var(--li-primary); text-decoration: none;">User Agreement</a> and 
+                <a href="/terms-and-conditions.html" style="color: var(--li-primary); text-decoration: none;">Privacy Policy</a>.
+            </p>
+
+            <button type="submit" id="submitBtn" class="li-btn-primary" style="width: 100%; padding: 12px; font-size: 15px;">
+                Agree &amp; Join
+            </button>
         </form>
 
-        <div class="footer-links">
-            Already have an account? <a href="/login.html">Sign In</a>
+        <div class="li-footer" style="margin-top: 24px; padding-top: 16px;">
+            Already on P&amp;C? <a href="/login.html" style="color: var(--li-primary); font-weight: 600; text-decoration: none;">Sign in</a>
         </div>
+    </div>
+
+    <!-- Mini Footer -->
+    <div style="margin-top: 28px; text-align: center; font-size: 11px; color: var(--li-text-muted);">
+        <div class="li-footer-links" style="margin-bottom: 6px;">
+            <a href="/about-us.html">About</a>
+            <a href="/support.html">Help Center</a>
+            <a href="/terms-and-conditions.html">Privacy &amp; Terms</a>
+        </div>
+        <span>People &amp; Culture &copy; 2026</span>
     </div>
 
     <script src="/js/api.js"></script>
@@ -174,7 +88,7 @@
                 alertBox.innerText = err.message || 'Signup failed.';
                 alertBox.style.display = 'block';
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Continue';
+                submitBtn.innerText = 'Agree & Join';
             }
         }
     </script>

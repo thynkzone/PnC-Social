@@ -21,4 +21,8 @@ public interface AuthService {
     User getCurrentUser(HttpServletRequest request);
 
     String getCurrentUserId(HttpServletRequest request);
+
+    void initiatePasswordReset(com.thynkzone.pnc.dto.ForgotPasswordRequest request);
+
+    void resetPassword(com.thynkzone.pnc.dto.ResetPasswordRequest request);
 }

@@ -2,153 +2,188 @@
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
-    <title>Account Settings - P&C</title>
+    <title>Settings &amp; Privacy - P&amp;C</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
-        :root {
-            --bg-main: #18181b;
-            --bg-card: rgba(36, 37, 46, 0.85);
-            --bg-tertiary: #23232a;
-            --accent-primary: #1da1f2;
-            --accent-danger: #e0245e;
-            --text-primary: #fff;
-            --text-secondary: #b0b3b8;
-            --border-primary: #2c2f36;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: var(--bg-main);
-            color: var(--text-primary);
-            margin: 0;
-            min-height: 100vh;
-        }
-        .topnav {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-primary);
-            padding: 10px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--accent-primary);
-            font-weight: 700;
-        }
-        .nav-logo img { width: 36px; height: 36px; }
-        .container {
-            max-width: 600px;
-            margin: 30px auto;
+        .settings-container {
+            max-width: 720px;
+            margin: 20px auto 40px;
             padding: 0 16px;
         }
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-primary);
-            border-radius: 12px;
-            padding: 28px;
-            margin-bottom: 24px;
+
+        .settings-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--li-border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        h1, h2 {
-            font-size: 1.3rem;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 16px;
-        }
-        label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-        }
-        input, textarea, select {
-            width: 100%;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            box-sizing: border-box;
-            outline: none;
-        }
-        .btn-primary {
-            background: var(--accent-primary);
+        .settings-title {
+            font-size: 18px;
+            font-weight: 700;
             color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-weight: 600;
-            cursor: pointer;
         }
-        .btn-danger {
-            background: var(--accent-danger);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-weight: 600;
-            cursor: pointer;
+
+        .settings-section-body {
+            padding: 24px;
         }
     </style>
 </head>
 <body>
 
-    <nav class="topnav">
-        <a href="/index.html" class="nav-logo">
-            <img src="/icon/p&c.png" alt="P&C">
-            <span>People &amp; Culture</span>
-        </a>
-        <a href="/index.html" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></a>
-    </nav>
-
-    <div class="container">
-        <div class="card">
-            <h2><i class="fa-solid fa-user-pen"></i> Edit Profile</h2>
-            <form id="profileForm" onsubmit="saveProfile(event)">
-                <div style="display: flex; gap: 14px; margin-bottom: 16px;">
-                    <div style="flex: 1;">
-                        <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" required>
-                    </div>
-                    <div style="flex: 1;">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" required>
-                    </div>
+    <!-- LinkedIn Top Navbar (Logo Only for branding) -->
+    <header class="li-navbar">
+        <div class="li-nav-inner">
+            <div class="li-nav-left">
+                <!-- Only logo for title/brand, no text -->
+                <a href="/index.html" class="li-logo-link" title="P&amp;C Home">
+                    <img src="/icon/p&c.png" alt="P&amp;C" class="li-logo-img">
+                </a>
+                
+                <div class="li-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalNavSearch" class="li-search-input" placeholder="Search people, topics..." onkeydown="if(event.key==='Enter') window.location.href='/search-user.html?q='+encodeURIComponent(this.value)">
                 </div>
-
-                <div class="form-group">
-                    <label for="about">Bio / About</label>
-                    <textarea id="about" rows="3"></textarea>
-                </div>
-
-                <div style="display: flex; gap: 14px; margin-bottom: 16px;">
-                    <div style="flex: 1;">
-                        <label for="place">Workplace Location / City</label>
-                        <input type="text" id="place">
-                    </div>
-                    <div style="flex: 1;">
-                        <label for="country">Country</label>
-                        <input type="text" id="country">
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary">Save Changes</button>
-            </form>
-        </div>
-
-        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h3 style="font-size: 1rem; margin-bottom: 4px;">Sign Out</h3>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Log out of your session on this device.</p>
             </div>
-            <button class="btn-danger" onclick="handleLogout()">Sign Out</button>
+
+            <nav class="li-nav-menu">
+                <a href="/index.html" class="li-nav-item" title="Home Feed">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+                <a href="/following.html" class="li-nav-item" title="My Network">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>My Network</span>
+                </a>
+                <a href="/advertisements.html" class="li-nav-item" title="Ads &amp; Campaigns">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Ads</span>
+                </a>
+                <a href="/post-updates.html" class="li-nav-item" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                
+                <!-- Authenticated User Dropdown -->
+                <div class="li-nav-item" id="navMeItem" style="display: none;" onclick="toggleMeDropdown(event)">
+                    <img id="navAvatar" class="li-nav-avatar" src="/images/prof.png" alt="Profile">
+                    <span style="display: flex; align-items: center; gap: 2px;">Me <i class="fa-solid fa-caret-down" style="font-size: 9px;"></i></span>
+
+                    <div class="li-dropdown-menu" id="meDropdownMenu">
+                        <div style="padding: 10px 16px; display: flex; gap: 10px; align-items: center;">
+                            <img id="menuAvatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" src="/images/prof.png" alt="User">
+                            <div style="min-width: 0;">
+                                <div id="menuName" style="font-weight: 700; font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                                <div id="menuHeadline" style="font-size: 11px; color: var(--li-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Professional</div>
+                            </div>
+                        </div>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="/profile.html" id="menuProfileLink" class="li-dropdown-item"><i class="fa-solid fa-user"></i> View Profile</a>
+                        <a href="/view-all-requests.html" class="li-dropdown-item"><i class="fa-solid fa-user-clock"></i> Pending Requests</a>
+                        <a href="/settings.html" class="li-dropdown-item"><i class="fa-solid fa-gear"></i> Settings &amp; Privacy</a>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="javascript:void(0)" onclick="handleLogout()" class="li-dropdown-item" style="color: var(--li-danger);"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+                    </div>
+                </div>
+
+                <a href="/login.html" id="navLoginBtn" class="li-btn-primary" style="margin-left: 8px; font-size: 13px; padding: 6px 16px;">
+                    Sign In
+                </a>
+            </nav>
         </div>
+    </header>
+
+    <div class="settings-container">
+
+        <!-- Edit Profile Card -->
+        <div class="li-card">
+            <div class="settings-header">
+                <div class="settings-title">
+                    <i class="fa-solid fa-user-pen" style="color: var(--li-primary); margin-right: 8px;"></i> Edit Profile Information
+                </div>
+            </div>
+
+            <div class="settings-section-body">
+                <form id="profileForm" onsubmit="saveProfile(event)">
+                    
+                    <!-- Avatar Upload -->
+                    <div style="display: flex; gap: 18px; margin-bottom: 24px; align-items: center;">
+                        <div style="position: relative; width: 84px; height: 84px;">
+                            <img id="settingsAvatarPreview" src="/images/prof.png" style="width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 2px solid var(--li-border);" alt="Avatar">
+                            <button type="button" onclick="document.getElementById('settingsAvatarFile').click()" style="position: absolute; right: 0; bottom: 0; background: var(--li-primary); color: #fff; border: 2px solid var(--li-bg-surface); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">
+                                <i class="fa-solid fa-camera"></i>
+                            </button>
+                            <input type="file" id="settingsAvatarFile" accept="image/*" style="display: none;" onchange="uploadSettingsAvatar(event)">
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 14px; color: #fff;">Profile Photo</div>
+                            <div style="font-size: 12px; color: var(--li-text-secondary); margin-bottom: 8px;">Direct Cloudflare R2 object storage</div>
+                            <button type="button" class="li-btn-secondary" style="font-size: 12px; padding: 5px 12px;" onclick="document.getElementById('settingsAvatarFile').click()">
+                                Change Photo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cover Upload -->
+                    <div style="margin-bottom: 24px;">
+                        <div style="font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 8px;">Cover Background Banner</div>
+                        <div style="position: relative; height: 130px; border-radius: var(--li-radius-md); overflow: hidden; border: 1px solid var(--li-border);">
+                            <img id="settingsCoverPreview" src="/images/prof.png" style="width: 100%; height: 100%; object-fit: cover;" alt="Cover">
+                            <button type="button" onclick="document.getElementById('settingsCoverFile').click()" class="li-btn-secondary" style="position: absolute; right: 12px; bottom: 12px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); font-size: 12px; padding: 6px 14px;">
+                                <i class="fa-solid fa-camera"></i> Change Cover
+                            </button>
+                            <input type="file" id="settingsCoverFile" accept="image/*" style="display: none;" onchange="uploadSettingsCover(event)">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div class="li-form-group" style="margin-bottom: 0;">
+                            <label class="li-label" for="firstName">First Name</label>
+                            <input type="text" id="firstName" class="li-input" required>
+                        </div>
+                        <div class="li-form-group" style="margin-bottom: 0;">
+                            <label class="li-label" for="lastName">Last Name</label>
+                            <input type="text" id="lastName" class="li-input" required>
+                        </div>
+                    </div>
+
+                    <div class="li-form-group">
+                        <label class="li-label" for="about">Bio / Professional Headline</label>
+                        <textarea id="about" class="li-textarea" rows="3" placeholder="Tell colleagues about your experience, interests, and expertise..."></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                        <div class="li-form-group" style="margin-bottom: 0;">
+                            <label class="li-label" for="place">City / Workplace Location</label>
+                            <input type="text" id="place" class="li-input" placeholder="e.g. Dhaka">
+                        </div>
+                        <div class="li-form-group" style="margin-bottom: 0;">
+                            <label class="li-label" for="country">Country</label>
+                            <input type="text" id="country" class="li-input" placeholder="e.g. Bangladesh">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="li-btn-primary" style="padding: 10px 24px;">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Account Session Card -->
+        <div class="li-card" style="padding: 20px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px;">Sign Out</h3>
+                <p style="font-size: 12px; color: var(--li-text-secondary); margin: 0;">Log out of your active session on this device.</p>
+            </div>
+            <button class="li-btn-secondary" style="color: var(--li-danger); border-color: var(--li-danger); font-size: 13px; padding: 6px 18px;" onclick="handleLogout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+            </button>
+        </div>
+
     </div>
 
     <script src="/js/api.js"></script>
@@ -158,16 +193,88 @@
                 const res = await API.getCurrentUser();
                 if (res && res.data) {
                     const p = res.data;
+                    setupNavbarMe(p);
+
                     document.getElementById('firstName').value = p.firstName || '';
                     document.getElementById('lastName').value = p.lastName || '';
                     document.getElementById('about').value = p.about || '';
                     document.getElementById('place').value = p.place || '';
                     document.getElementById('country').value = p.country || '';
+
+                    if (p.profilePic) {
+                        document.getElementById('settingsAvatarPreview').src = p.profilePic.startsWith('http') ? p.profilePic : `/images/${p.profilePic}`;
+                    }
+                    if (p.backgroundPic) {
+                        document.getElementById('settingsCoverPreview').src = p.backgroundPic.startsWith('http') ? p.backgroundPic : `/images/${p.backgroundPic}`;
+                    }
                 }
             } catch (err) {
                 window.location.href = '/login.html';
             }
         });
+
+        function setupNavbarMe(user) {
+            document.getElementById('navLoginBtn').style.display = 'none';
+            const navMe = document.getElementById('navMeItem');
+            navMe.style.display = 'flex';
+            if (user.profilePic) {
+                const pic = user.profilePic.startsWith('http') ? user.profilePic : `/images/${user.profilePic}`;
+                document.getElementById('navAvatar').src = pic;
+                document.getElementById('menuAvatar').src = pic;
+            }
+            document.getElementById('menuName').innerText = user.fullName || 'User';
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} • ${user.rating || 0} pts`;
+            document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
+        }
+
+        function toggleMeDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('meDropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', () => {
+            const menu = document.getElementById('meDropdownMenu');
+            if (menu) menu.classList.remove('show');
+        });
+
+        async function uploadSettingsAvatar(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            try {
+                showToast('Uploading profile photo...');
+                const uploadRes = await API.uploadImage(file, 'profiles');
+                if (!uploadRes || !uploadRes.downloadUrl) {
+                    throw new Error('Upload failed: No image URL returned');
+                }
+                await API.updateProfilePicture(uploadRes.downloadUrl);
+                document.getElementById('settingsAvatarPreview').src = uploadRes.downloadUrl;
+                showToast('Profile photo updated!');
+            } catch (err) {
+                showToast(err.message || 'Upload failed', true);
+            } finally {
+                event.target.value = '';
+            }
+        }
+
+        async function uploadSettingsCover(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            try {
+                showToast('Uploading cover photo...');
+                const uploadRes = await API.uploadImage(file, 'covers');
+                if (!uploadRes || !uploadRes.downloadUrl) {
+                    throw new Error('Upload failed: No image URL returned');
+                }
+                await API.updateBackgroundPicture(uploadRes.downloadUrl);
+                document.getElementById('settingsCoverPreview').src = uploadRes.downloadUrl;
+                showToast('Cover photo updated!');
+            } catch (err) {
+                showToast(err.message || 'Upload failed', true);
+            } finally {
+                event.target.value = '';
+            }
+        }
 
         async function saveProfile(e) {
             e.preventDefault();
@@ -180,7 +287,7 @@
             };
             try {
                 await API.updateProfile(payload);
-                showToast('Profile updated!');
+                showToast('Profile changes saved successfully!');
             } catch (err) {
                 showToast(err.message, true);
             }

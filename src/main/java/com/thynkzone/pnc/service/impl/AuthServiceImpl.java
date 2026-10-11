@@ -1,7 +1,9 @@
 package com.thynkzone.pnc.service.impl;
 
 import com.thynkzone.pnc.dto.AuthResponse;
+import com.thynkzone.pnc.dto.ForgotPasswordRequest;
 import com.thynkzone.pnc.dto.LoginRequest;
+import com.thynkzone.pnc.dto.ResetPasswordRequest;
 import com.thynkzone.pnc.dto.SignupRequest;
 import com.thynkzone.pnc.dto.VerifyCodeRequest;
 import com.thynkzone.pnc.entity.User;
@@ -37,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
 
     // In-memory pending verification registrations (can be backed by DB/Cache)
     private final Map<String, PendingSignup> pendingSignups = new ConcurrentHashMap<>();
+    private final Map<String, String> pendingPasswordResets = new ConcurrentHashMap<>();
 
     private record PendingSignup(String email, String passwordHash, String recoveryCode, String verificationCode) {}
 
@@ -169,5 +172,48 @@ public class AuthServiceImpl implements AuthService {
     public String getCurrentUserId(HttpServletRequest request) {
         User user = getCurrentUser(request);
         return user != null ? user.getId() : null;
+    }
+
+    @Override
+    public void initiatePasswordReset(ForgotPasswordRequest request) {
+        String email = request.email().toLowerCase().trim();
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            // Silently log to prevent user enumeration attacks
+            log.info("Password reset requested for non-existent email: [{}]", email);
+            return;
+        }
+
+        String resetCode = UidGenerator.generateRandomCode();
+        pendingPasswordResets.put(email, resetCode);
+        log.info("Password reset code generated for [{}]: {}", email, resetCode);
+
+        // Send via Brevo REST API
+        emailService.sendPasswordResetEmail(email, resetCode);
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request) {
+        String email = request.email().toLowerCase().trim();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("No account found with this email address."));
+
+        String inputCode = request.code().trim();
+        String pendingCode = pendingPasswordResets.get(email);
+        boolean isResetCodeValid = pendingCode != null && pendingCode.equals(inputCode);
+        boolean isRecoveryCodeValid = user.getRecoveryCode() != null && user.getRecoveryCode().equalsIgnoreCase(inputCode);
+
+        if (!isResetCodeValid && !isRecoveryCodeValid) {
+            throw new IllegalArgumentException("Invalid verification code or recovery code. Please check and try again.");
+        }
+
+        String newHash = passwordSecurity.hashPassword(request.newPassword());
+        user.setPasswordHash(newHash);
+        user.setFailedAttempts(0);
+        userRepository.save(user);
+
+        pendingPasswordResets.remove(email);
+        log.info("Password successfully reset for user [{}]", email);
     }
 }
