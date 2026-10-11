@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: pnc-social
+    env: docker
+    plan: free
+    region: ohio
+    dockerfilePath: Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: JAVA_TOOL_OPTIONS
+        value: -Xmx256m -Xms64m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError
+      - key: DB_URL
+        value: jdbc:postgresql://ep-muddy-sunset-b4d80e2b-pooler.c-6.us-east-2.aws.neon.tech:5432/neondb?sslmode=require
+      - key: DB_USERNAME
+        value: neondb_owner
+      - key: DB_PASSWORD
+        sync: false
+      - key: R2_ENDPOINT
+        value: https://b823bc44241592e012a8f6b554d619a8.r2.cloudflarestorage.com
+      - key: R2_BUCKET
+        value: pnc
+      - key: R2_ACCESS_KEY
+        sync: false
+      - key: R2_SECRET_KEY
+        sync: false
+      - key: R2_PUBLIC_URL
+        value: https://cdn.thynkzone.eu.org
+      - key: BREVO_SENDER_NAME
+        value: People & Culture
+      - key: BREVO_SENDER_EMAIL
+        value: team@thynkzone.eu.org
+      - key: BREVO_API_KEY
+        sync: false

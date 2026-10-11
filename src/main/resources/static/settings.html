@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
+    <title>Account Settings - P&C</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #18181b;
+            --bg-card: rgba(36, 37, 46, 0.85);
+            --bg-tertiary: #23232a;
+            --accent-primary: #1da1f2;
+            --accent-danger: #e0245e;
+            --text-primary: #fff;
+            --text-secondary: #b0b3b8;
+            --border-primary: #2c2f36;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            min-height: 100vh;
+        }
+        .topnav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+        .nav-logo img { width: 36px; height: 36px; }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        h1, h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        input, textarea, select {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-danger {
+            background: var(--accent-danger);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="topnav">
+        <a href="/index.html" class="nav-logo">
+            <img src="/icon/p&c.png" alt="P&C">
+            <span>People &amp; Culture</span>
+        </a>
+        <a href="/index.html" style="color: var(--text-secondary); font-size: 1.2rem;"><i class="fa-solid fa-xmark"></i></a>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2><i class="fa-solid fa-user-pen"></i> Edit Profile</h2>
+            <form id="profileForm" onsubmit="saveProfile(event)">
+                <div style="display: flex; gap: 14px; margin-bottom: 16px;">
+                    <div style="flex: 1;">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="about">Bio / About</label>
+                    <textarea id="about" rows="3"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 14px; margin-bottom: 16px;">
+                    <div style="flex: 1;">
+                        <label for="place">Workplace Location / City</label>
+                        <input type="text" id="place">
+                    </div>
+                    <div style="flex: 1;">
+                        <label for="country">Country</label>
+                        <input type="text" id="country">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+        </div>
+
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="font-size: 1rem; margin-bottom: 4px;">Sign Out</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Log out of your session on this device.</p>
+            </div>
+            <button class="btn-danger" onclick="handleLogout()">Sign Out</button>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await API.getCurrentUser();
+                if (res && res.data) {
+                    const p = res.data;
+                    document.getElementById('firstName').value = p.firstName || '';
+                    document.getElementById('lastName').value = p.lastName || '';
+                    document.getElementById('about').value = p.about || '';
+                    document.getElementById('place').value = p.place || '';
+                    document.getElementById('country').value = p.country || '';
+                }
+            } catch (err) {
+                window.location.href = '/login.html';
+            }
+        });
+
+        async function saveProfile(e) {
+            e.preventDefault();
+            const payload = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                about: document.getElementById('about').value.trim(),
+                place: document.getElementById('place').value.trim(),
+                country: document.getElementById('country').value.trim()
+            };
+            try {
+                await API.updateProfile(payload);
+                showToast('Profile updated!');
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await API.logout();
+                window.location.href = '/login.html';
+            } catch (err) {
+                window.location.href = '/login.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,109 +1,101 @@
-# P&C (People & Culture) - Workplace Social Networking Platform
+# P&C (People & Culture) - Modern Cloud-Native Social Platform
 
-A comprehensive social networking web application designed specifically for workplace communities, enabling employees to share experiences, collaborate on ideas, and foster positive organizational culture.
+A modernized, decoupled, cloud-native workplace social networking platform engineered for zero-cost, serverless-friendly cloud deployments.
 
-## 🚀 Features
+---
 
-- **User Management**: Registration, authentication, profile customization
-- **Social Networking**: Friend/follower system, user discovery, privacy controls
-- **Content Sharing**: Post creation (memes, facts, updates), image uploads, commenting
-- **Gamification**: Point-based engagement system with 9 user ranks
-- **Real-time Features**: Notifications, live updates, instant messaging
-- **Administrative Tools**: Content moderation, user reporting, analytics
-- **Security**: Multi-layer authentication, CSRF protection, input validation
+## 🚀 Architecture & Modern Tech Stack
 
-## 🛠️ Technology Stack
+- **Backend Framework:** Spring Boot 3.5 (REST API, Spring Data JPA, Spring Security)
+- **Language & Runtime:** Java 25 (LTS)
+  - **Virtual Threads:** High concurrency handling with near-zero memory footprint
+  - **Java Records:** Immutable DTO data carriers
+  - **Scoped Values (JEP 487):** Secure request context propagation replacing legacy `ThreadLocal`
+  - **Pattern Matching (JEP 507/513):** Exhaustive `switch` expressions and flexible constructor bodies
+- **Serverless Database:** Neon DB (PostgreSQL)
+  - Connection pooling configured via `-pooler.neon.tech` and HikariCP (`maximumPoolSize=5`, cold-start resilience)
+- **Object Storage:** Cloudflare R2 (S3-Compatible)
+  - Direct frontend-to-storage presigned PUT uploads and presigned GET downloads (zero bandwidth overhead on server)
+- **Transactional Email:** Brevo REST API
+  - Native `java.net.http.HttpClient` on virtual threads (bypasses Render outbound SMTP port blocking)
+- **Deployment Platform:** Render Free Tier (<= 512MB RAM)
+  - Tuned JVM parameters (`-Xmx256m -Xms64m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError`) to eliminate OOM risks
 
-- **Backend**: Java, JSP, Servlets, JDBC
-- **Database**: MySQL
-- **Frontend**: HTML5, CSS3, JavaScript, jQuery
-- **Security**: BCrypt, SHA-512, AES encryption, reCAPTCHA
-- **Server**: Apache Tomcat
+---
 
-## 📁 Project Structure
+## 🛠️ Project Structure
 
 ```
-src/main/
-├── java/com/thynkzone/jsp/     # Java backend classes
-│   ├── db.java                 # Database operations (3,272 lines)
-│   ├── hasher.java             # Password hashing
-│   ├── encdecry.java           # Encryption utilities
-│   └── ...                     # 24 other utility classes
-├── webapp/                     # Frontend files
-│   ├── *.jsp                   # 63 JSP pages
-│   ├── css-pages.css           # Custom styling (1,699 lines)
-│   ├── icon/                   # Application icons
-│   └── img/                    # User uploads (gitignored)
-└── WEB-INF/                    # Configuration files
+├── .mvn/wrapper/                  # Maven Wrapper runtime
+├── src/
+│   ├── main/
+│   │   ├── java/com/thynkzone/pnc/
+│   │   │   ├── config/            # Security, S3/R2 storage, Web MVC configurations
+│   │   │   ├── context/           # Scoped Values request context holders
+│   │   │   ├── controller/        # REST Controllers (@RestController)
+│   │   │   ├── dto/               # Java Records immutable DTOs
+│   │   │   ├── entity/            # JPA Entities (User, Post, Relationship, Notification)
+│   │   │   ├── exception/         # Exception handling & JEP 513 flexible constructors
+│   │   │   ├── repository/        # Spring Data JPA Repositories
+│   │   │   ├── service/           # Business logic & email/storage services
+│   │   │   └── util/              # Password security, sanitization, token generation
+│   │   └── resources/
+│   │       ├── application.properties # Production configuration with env overrides
+│   │       └── static/            # Decoupled frontend assets (HTML, CSS, JS, icons)
+├── Dockerfile                     # Multi-stage production container build (Java 25)
+├── pom.xml                        # Maven dependencies & plugins
+├── render.yaml                    # Infrastructure-as-code for Render deployment
+└── README.md
 ```
 
-## 🔧 Setup Instructions
+---
+
+## 🔧 Local Development & Build
 
 ### Prerequisites
-- Java JDK 8 or higher
-- Apache Tomcat 9
-- MySQL 5.7 or higher
-- Maven (optional)
+- Java 25 JDK (e.g. Eclipse Adoptium Temurin 25)
+- Git
 
-### Database Setup
-1. Create MySQL databases:
-   ```sql
-   CREATE DATABASE thynkzone;
-   CREATE DATABASE users;
-   ```
-2. Import the database schema (contact developer for schema files)
+### Running Locally
+```powershell
+# Set JAVA_HOME (if not automatically configured in PATH)
+$env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-25.0.4.101-hotspot"
 
-### Configuration
-1. Create configuration files in `WEB-INF/secured/`:
-   - `eu.txt` - Database username
-   - `ep.txt` - Database password
-   - `emp.txt` - Email password
-   - `q.txt`, `x.txt`, `y.txt`, `z.txt` - Security keys
+# Build executable jar
+.\mvnw.cmd clean package -DskipTests
 
-2. Update database connection settings in `db.java`
+# Run Spring Boot application
+java -Xmx256m -jar target/pnc-social-2.0.0.jar
+```
 
-### Deployment
-1. Build the project
-2. Deploy to Apache Tomcat
-3. Configure server settings
-4. Start the application
+The application starts on `http://localhost:8080/`.
 
-## 🔒 Security Features
+---
 
-- **Password Security**: BCrypt hashing with salt and pepper
-- **Session Management**: Encrypted cookies with expiration
-- **Input Validation**: Comprehensive sanitization and validation
-- **CSRF Protection**: Token-based request verification
-- **SQL Injection Prevention**: Prepared statements
-- **XSS Protection**: Input sanitization and output encoding
-- **File Upload Security**: Type validation and size restrictions
+## 🚢 Render Deployment Instructions
 
-## 📊 Project Statistics
+This repository is pre-configured for direct GitHub push deployments:
 
-- **Total Lines of Code**: ~42,000 lines
-- **Java Classes**: 27 files
-- **JSP Pages**: 63 files
-- **CSS**: 1,699 lines
-- **Database Tables**: 8+ tables
-- **Security Classes**: 6+ specialized classes
+1. **Connect Repo in Render:**
+   - Create a new **Web Service** on [Render](https://render.com).
+   - Connect your GitHub repository.
+   - Choose **Docker** environment. Render detects `Dockerfile` and `render.yaml` automatically.
 
-## 🤝 Contributing
+2. **Automated Configuration via Blueprint (`render.yaml`):**
+   Non-sensitive infrastructure configurations are pre-defined in `render.yaml`. Sensitive credentials are kept secure and configured via Render Dashboard environment variables (`sync: false`):
+   - `JAVA_TOOL_OPTIONS`: `-Xmx256m -Xms64m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError`
+   - `PORT`: `8080`
+   - `DB_URL`: Neon DB serverless pooled connection URL
+   - `DB_USERNAME`: `neondb_owner`
+   - `DB_PASSWORD`: `<your_neon_db_password>` (Render Secret)
+   - `R2_ENDPOINT`: `https://b823bc44241592e012a8f6b554d619a8.r2.cloudflarestorage.com`
+   - `R2_BUCKET`: `pnc`
+   - `R2_ACCESS_KEY`: `<your_cloudflare_r2_access_key>` (Render Secret)
+   - `R2_SECRET_KEY`: `<your_cloudflare_r2_secret_key>` (Render Secret)
+   - `R2_PUBLIC_URL`: `https://cdn.thynkzone.eu.org`
+   - `BREVO_API_KEY`: `<your_brevo_v3_api_key>` (Render Secret)
+   - `BREVO_SENDER_EMAIL`: `team@thynkzone.eu.org`
+   - `BREVO_SENDER_NAME`: `People & Culture`
 
-This is a personal project. For questions or collaboration, please contact the developer.
-
-## 📝 License
-
-Copyright © 2020 by Md Mazidul Haque Farabi. All rights reserved.
-
-## ⚠️ Important Notes
-
-- This repository contains only the source code
-- Configuration files and sensitive data are excluded via `.gitignore`
-- Database credentials and security keys must be configured separately
-- User uploads and images are stored externally and not included in the repository
-
-## 🔗 Contact
-
-- **Developer**: Md. Mazidul Haque Farabi
-- **GitHub**: [mazidulfarabi](https://github.com/mazidulfarabi)
-- **Project**: P&C (People & Culture) 
+3. **Deploy:**
+   Every `git push origin main` triggers an automated zero-downtime Docker build on Render.

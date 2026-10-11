@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
+    <title>Find People - P&C</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #18181b;
+            --bg-card: rgba(36, 37, 46, 0.85);
+            --bg-tertiary: #23232a;
+            --accent-primary: #1da1f2;
+            --text-primary: #fff;
+            --text-secondary: #b0b3b8;
+            --border-primary: #2c2f36;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            min-height: 100vh;
+        }
+        .topnav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--accent-primary); font-weight: 700; }
+        .nav-logo img { width: 36px; height: 36px; }
+        .container { max-width: 600px; margin: 24px auto; padding: 0 16px; }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+        .search-input {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            outline: none;
+        }
+        .search-input:focus { border-color: var(--accent-primary); }
+        .btn-search {
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .user-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+        .user-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+        .user-info { flex: 1; }
+        .user-name { font-weight: 600; text-decoration: none; color: var(--text-primary); }
+        .user-meta { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+    <nav class="topnav">
+        <a href="/index.html" class="nav-logo">
+            <img src="/icon/p&c.png" alt="P&C">
+            <span>People &amp; Culture</span>
+        </a>
+        <a href="/index.html" style="color: var(--text-secondary);"><i class="fa-solid fa-house"></i></a>
+    </nav>
+
+    <div class="container">
+        <h1 style="font-size: 1.4rem; margin-bottom: 16px;">Search People</h1>
+        <form class="search-box" onsubmit="handleSearch(event)">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by name, role, or workplace..." autofocus>
+            <button type="submit" class="btn-search">Search</button>
+        </form>
+
+        <div id="resultsList">
+            <p style="text-align: center; color: var(--text-secondary);">Enter a name or keyword to find colleagues.</p>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        async function handleSearch(e) {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            const list = document.getElementById('resultsList');
+            list.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">Searching...</p>';
+
+            try {
+                const res = await API.searchUsers(query);
+                list.innerHTML = '';
+                if (!res.data || res.data.length === 0) {
+                    list.innerHTML = `<p style="text-align: center; color: var(--text-secondary); padding: 30px;">No people found matching "${query}".</p>`;
+                    return;
+                }
+
+                res.data.forEach(u => {
+                    const avatar = u.profilePic && u.profilePic.startsWith('http') ? u.profilePic : `/images/${u.profilePic || 'prof.png'}`;
+                    const item = document.createElement('div');
+                    item.className = 'user-item';
+                    item.innerHTML = `
+                        <img class="user-avatar" src="${avatar}" alt="">
+                        <div class="user-info">
+                            <a href="/profile.html?userId=${u.id}" class="user-name">${u.fullName}</a>
+                            <div class="user-meta">${u.rank || 'Member'} • ${u.place || 'Remote'}</div>
+                        </div>
+                        <a href="/profile.html?userId=${u.id}" style="color: var(--accent-primary); font-size: 0.9rem; text-decoration: none; font-weight: 500;">View Profile</a>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (err) {
+                list.innerHTML = `<p style="color: #e0245e; text-align: center;">${err.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>

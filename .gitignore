@@ -2,6 +2,9 @@
 WEB-INF/secured/
 *.txt
 *.properties
+!src/main/resources/application.properties
+!.mvn/wrapper/maven-wrapper.properties
+!.mvn/wrapper/maven-wrapper.jar
 *.config
 *.env
 

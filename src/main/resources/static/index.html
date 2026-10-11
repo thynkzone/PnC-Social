@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
+    <title>P&C (People &amp; Culture)</title>
+    <meta charset="UTF-8">
+    <meta name="description" content="P&C (People & Culture) is the place to share your ideas with the world. A workplace community for innovators, entrepreneurs, and thinkers."/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="/css-pages.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #18181b;
+            --bg-card: rgba(36, 37, 46, 0.85);
+            --bg-glass: rgba(36, 37, 46, 0.65);
+            --bg-tertiary: #23232a;
+            --accent-primary: #1da1f2;
+            --accent-secondary: #0a8cd8;
+            --accent-danger: #e0245e;
+            --text-primary: #fff;
+            --text-secondary: #b0b3b8;
+            --text-muted: #888;
+            --border-primary: #2c2f36;
+            --shadow-md: 0 2px 12px 0 rgba(0,0,0,0.18);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            margin: 0;
+            min-height: 100vh;
+        }
+        .main-container {
+            max-width: 680px;
+            margin: 20px auto;
+            padding: 0 16px;
+        }
+        .post-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-primary);
+            padding: 18px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
+        }
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .post-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-primary);
+        }
+        .post-author-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .post-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .post-badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .post-content {
+            font-size: 0.98rem;
+            line-height: 1.5;
+            margin-bottom: 14px;
+            white-space: pre-wrap;
+        }
+        .post-img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-primary);
+            color: var(--text-secondary);
+        }
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .action-btn:hover, .action-btn.active {
+            color: var(--accent-primary);
+        }
+        .action-btn.dislike-btn.active {
+            color: var(--accent-danger);
+        }
+        .create-post-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border-primary);
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .create-post-textarea {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 12px;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 80px;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .create-post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .btn-primary {
+            background: var(--accent-primary);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            background: var(--accent-secondary);
+        }
+        .comments-list {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-primary);
+        }
+        .comment-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .comment-bubble {
+            background: var(--bg-tertiary);
+            padding: 8px 12px;
+            border-radius: 12px;
+            flex: 1;
+        }
+        .comment-author {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .comment-text {
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        .comment-input-box {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .comment-input {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: 20px;
+            color: var(--text-primary);
+            padding: 8px 14px;
+            outline: none;
+        }
+        .topnav {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 10px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--accent-primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .nav-logo img {
+            width: 36px;
+            height: 36px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-link {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-primary);
+        }
+        .nav-profile-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1.5px solid var(--border-primary);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Modern Navigation -->
+    <nav class="topnav">
+        <a href="/index.html" class="nav-logo">
+            <img src="/icon/p&c.png" alt="P&C Logo">
+            <span>People &amp; Culture</span>
+        </a>
+        <div class="nav-links">
+            <a href="/index.html" class="nav-link active" title="Feed"><i class="fa-solid fa-house"></i></a>
+            <a href="/following.html" class="nav-link" title="Network"><i class="fa-solid fa-user-group"></i></a>
+            <a href="/post-updates.html" class="nav-link" title="Notifications"><i class="fa-solid fa-bell"></i></a>
+            <a href="/search-user.html" class="nav-link" title="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
+            <a id="profileNavLink" href="/login.html">
+                <img id="navAvatar" class="nav-profile-img" src="/images/prof.png" alt="Profile">
+            </a>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- Post Composer -->
+        <div class="create-post-card" id="composerSection" style="display: none;">
+            <div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
+                <img id="composerAvatar" class="post-avatar" src="/images/prof.png" alt="User">
+                <span id="composerName" style="font-weight: 600;">What are you thinking?</span>
+            </div>
+            <textarea id="postContentInput" class="create-post-textarea" placeholder="Share an insight, work update, meme, or fact..."></textarea>
+            <div class="create-post-footer">
+                <div style="display: flex; gap: 10px;">
+                    <select id="postTypeSelect" style="background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 6px; padding: 6px;">
+                        <option value="3">Work Update</option>
+                        <option value="1">Meme</option>
+                        <option value="2">Fact</option>
+                    </select>
+                    <select id="postPrivacySelect" style="background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-primary); border-radius: 6px; padding: 6px;">
+                        <option value="4">Public</option>
+                        <option value="3">Co-workers &amp; Followers</option>
+                        <option value="2">Co-workers Only</option>
+                        <option value="1">Only Me</option>
+                    </select>
+                </div>
+                <button class="btn-primary" onclick="publishPost()">Post</button>
+            </div>
+        </div>
+
+        <!-- Feed Container -->
+        <div id="postsFeed">
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                <p>Loading posts...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            await loadFeed();
+        });
+
+        async function checkAuth() {
+            try {
+                const res = await API.getCurrentUser();
+                if (res && res.success && res.data) {
+                    currentUser = res.data;
+                    document.getElementById('composerSection').style.display = 'block';
+                    document.getElementById('composerName').innerText = `What are you thinking, ${currentUser.fullName || 'there'}?`;
+                    document.getElementById('profileNavLink').href = `/profile.html?userId=${currentUser.id}`;
+                    if (currentUser.profilePic) {
+                        const avatarSrc = currentUser.profilePic.startsWith('http') ? currentUser.profilePic : `/images/${currentUser.profilePic}`;
+                        document.getElementById('navAvatar').src = avatarSrc;
+                        document.getElementById('composerAvatar').src = avatarSrc;
+                    }
+                }
+            } catch (err) {
+                // Visitor / not logged in
+                document.getElementById('profileNavLink').href = '/login.html';
+            }
+        }
+
+        async function loadFeed() {
+            try {
+                const res = await API.getFeed(0, 20);
+                const feed = document.getElementById('postsFeed');
+                feed.innerHTML = '';
+
+                if (!res.data || !res.data.content || res.data.content.length === 0) {
+                    feed.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-muted);"><p>No posts yet. Be the first to share an idea!</p></div>';
+                    return;
+                }
+
+                res.data.content.forEach(post => {
+                    feed.appendChild(renderPostCard(post));
+                });
+            } catch (err) {
+                document.getElementById('postsFeed').innerHTML = `<div style="text-align: center; color: var(--accent-danger); padding: 40px;">Failed to load feed: ${err.message}</div>`;
+            }
+        }
+
+        function renderPostCard(post) {
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            card.id = `post-${post.id}`;
+
+            const typeLabel = post.postType === 1 ? 'Meme' : post.postType === 2 ? 'Fact' : 'Update';
+            const avatarSrc = post.authorProfilePic && post.authorProfilePic.startsWith('http') 
+                ? post.authorProfilePic 
+                : `/images/${post.authorProfilePic || 'prof.png'}`;
+
+            card.innerHTML = `
+                <div class="post-header">
+                    <img class="post-avatar" src="${avatarSrc}" alt="${post.authorFullName}">
+                    <div>
+                        <a href="/profile.html?userId=${post.authorId}" class="post-author-name">${post.authorFullName}</a>
+                        <span class="post-badge">${typeLabel}</span>
+                        <div class="post-time">${post.timeAgo || 'Recently'}</div>
+                    </div>
+                </div>
+                <div class="post-content">${escapeHtml(post.content)}</div>
+                ${post.imageUrl ? `<img src="${post.imageUrl}" class="post-img" alt="Post attachment">` : ''}
+                <div class="post-actions">
+                    <button class="action-btn like-btn ${post.liked ? 'active' : ''}" onclick="toggleLike('${post.id}', ${post.liked})">
+                        <i class="fa-solid fa-heart"></i> <span id="likes-count-${post.id}">${post.likesCount || 0}</span>
+                    </button>
+                    <button class="action-btn dislike-btn ${post.disliked ? 'active' : ''}" onclick="toggleDislike('${post.id}', ${post.disliked})">
+                        <i class="fa-solid fa-thumbs-down"></i> <span id="dislikes-count-${post.id}">${post.dislikesCount || 0}</span>
+                    </button>
+                    <button class="action-btn" onclick="toggleComments('${post.id}')">
+                        <i class="fa-solid fa-comment"></i> <span>${post.commentsCount || 0}</span>
+                    </button>
+                    ${currentUser && currentUser.id === post.authorId ? `
+                        <button class="action-btn" onclick="deletePost('${post.id}')" style="margin-left: auto; color: var(--accent-danger);">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    ` : ''}
+                </div>
+                <div class="comments-list" id="comments-${post.id}" style="display: none;">
+                    <div id="comments-items-${post.id}">
+                        ${(post.comments || []).map(c => renderCommentItem(c)).join('')}
+                    </div>
+                    <div class="comment-input-box">
+                        <input type="text" id="comment-input-${post.id}" class="comment-input" placeholder="Write a comment..." onkeydown="handleCommentKey(event, '${post.id}')">
+                        <button class="btn-primary" style="padding: 6px 16px;" onclick="submitComment('${post.id}')">Send</button>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        function renderCommentItem(comment) {
+            const avatarSrc = comment.actorProfilePic && comment.actorProfilePic.startsWith('http')
+                ? comment.actorProfilePic
+                : `/images/${comment.actorProfilePic || 'prof.png'}`;
+            return `
+                <div class="comment-item">
+                    <img class="comment-avatar" src="${avatarSrc}" alt="">
+                    <div class="comment-bubble">
+                        <a href="/profile.html?userId=${comment.actorId}" class="comment-author">${comment.actorFullName}</a>
+                        <div class="comment-text">${escapeHtml(comment.commentText)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function publishPost() {
+            const content = document.getElementById('postContentInput').value.trim();
+            if (!content) {
+                showToast('Please write something to post.', true);
+                return;
+            }
+            const postType = parseInt(document.getElementById('postTypeSelect').value);
+            const privacy = parseInt(document.getElementById('postPrivacySelect').value);
+
+            try {
+                const res = await API.createPost(content, postType, privacy);
+                if (res.success) {
+                    showToast('Post published!');
+                    document.getElementById('postContentInput').value = '';
+                    loadFeed();
+                }
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        async function toggleLike(postId, currentlyLiked) {
+            if (!currentUser) return redirectToLogin();
+            try {
+                await API.reactToPost(postId, currentlyLiked ? 0 : 1);
+                loadFeed();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        async function toggleDislike(postId, currentlyDisliked) {
+            if (!currentUser) return redirectToLogin();
+            try {
+                await API.reactToPost(postId, currentlyDisliked ? 0 : 2);
+                loadFeed();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        function toggleComments(postId) {
+            const section = document.getElementById(`comments-${postId}`);
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        async function submitComment(postId) {
+            if (!currentUser) return redirectToLogin();
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+            if (!text) return;
+
+            try {
+                const res = await API.addComment(postId, text);
+                if (res.success) {
+                    input.value = '';
+                    const container = document.getElementById(`comments-items-${postId}`);
+                    container.innerHTML += renderCommentItem(res.data);
+                    showToast('Comment posted!');
+                }
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        function handleCommentKey(e, postId) {
+            if (e.key === 'Enter') submitComment(postId);
+        }
+
+        async function deletePost(postId) {
+            if (!confirm('Are you sure you want to delete this post?')) return;
+            try {
+                await API.deletePost(postId);
+                showToast('Post deleted.');
+                document.getElementById(`post-${postId}`)?.remove();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        function redirectToLogin() {
+            window.location.href = '/login.html';
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+            })[m]);
+        }
+    </script>
+</body>
+</html>
