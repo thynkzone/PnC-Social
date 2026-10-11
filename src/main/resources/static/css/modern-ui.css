@@ -49,6 +49,8 @@ body {
     position: sticky;
     top: 0;
     z-index: 1000;
+    padding-top: max(env(safe-area-inset-top, 0px), 0px);
+    box-sizing: content-box;
     height: 54px;
 }
 
@@ -388,6 +390,9 @@ body {
 }
 
 @media (max-width: 768px) {
+    .li-navbar {
+        padding-top: max(env(safe-area-inset-top, 0px), 8px);
+    }
     .li-search-box {
         display: none;
     }
@@ -399,3 +404,31 @@ body {
         font-size: 16px;
     }
 }
+
+/* Reusable Back Button */
+.li-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--li-text-secondary);
+    background: var(--li-bg-hover);
+    border: 1px solid var(--li-border-light);
+    border-radius: var(--li-radius-pill);
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+.li-back-btn:hover {
+    color: #ffffff;
+    background: var(--li-bg-elevated);
+    border-color: var(--li-primary);
+}
+
+/* Solid Blue Default Background for Covers */
+.cover-photo-wrap, .li-profile-cover {
+    background-color: #0a66c2 !important; /* Authentic solid blue default */
+}
+

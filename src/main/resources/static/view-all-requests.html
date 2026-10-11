@@ -4,7 +4,8 @@
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
     <title>Co-worker Invitations - P&amp;C</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
@@ -136,12 +137,16 @@
     </header>
 
     <div class="requests-container">
+        <!-- Back Button -->
+        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <button onclick="if(history.length>1){history.back()}else{window.location.href='/following.html'}" class="li-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Network
+            </button>
+        </div>
+
         <div class="li-card">
             <div class="req-list-header">
                 <div class="req-list-title">Pending Invitations &amp; Co-worker Requests</div>
-                <a href="/following.html" class="li-btn-ghost" style="padding: 6px 12px; font-size: 12px;">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Network
-                </a>
             </div>
 
             <div id="requestsList">
@@ -150,7 +155,7 @@
         </div>
     </div>
 
-    <script src="/js/api.js"></script>
+    <script src="/js/api.js?v=2.2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {

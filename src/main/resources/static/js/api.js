@@ -168,6 +168,19 @@ const ColdStartUI = {
         const overlay = this.createOverlay();
         if (customTitle) document.getElementById('pnc-cold-title').innerText = customTitle;
         if (customDesc) document.getElementById('pnc-cold-desc').innerText = customDesc;
+
+        if (!this.startTime) {
+            this.startTime = Date.now();
+            const counter = document.getElementById('pnc-cold-counter');
+            if (counter) counter.innerText = `Wait time: 0s`;
+            if (this.timerInterval) clearInterval(this.timerInterval);
+            this.timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const el = document.getElementById('pnc-cold-counter');
+                if (el) el.innerText = `Wait time: ${elapsed}s`;
+            }, 1000);
+        }
+
         overlay.classList.add('active');
     },
 
@@ -187,6 +200,11 @@ const ColdStartUI = {
         setTimeout(() => {
             const overlay = document.getElementById(this.modalId);
             if (overlay) overlay.classList.remove('active');
+            if (this.timerInterval) {
+                clearInterval(this.timerInterval);
+                this.timerInterval = null;
+            }
+            this.startTime = null;
             this.visible = false;
             const retryEl = document.getElementById('pnc-cold-retry');
             if (retryEl) retryEl.style.display = 'none';
@@ -355,6 +373,10 @@ const API = {
         return this.post(`/posts/${postId}/comments`, { commentText });
     },
 
+    updateComment(postId, commentId, commentText) {
+        return this.put(`/posts/${postId}/comments/${commentId}`, { commentText });
+    },
+
     deleteComment(postId, commentId) {
         return this.delete(`/posts/${postId}/comments/${commentId}`);
     },
@@ -414,7 +436,7 @@ const API = {
             throw new Error(`Direct storage upload failed (HTTP ${uploadRes.status})`);
         }
 
-        return { publicUrl, objectKey };
+        return { publicUrl, downloadUrl: publicUrl, objectKey };
     },
 
     // Advertisements
@@ -481,8 +503,9 @@ const API = {
     }
 };
 
-// Auto-probe health check on page load to pre-warm cold server
 if (typeof window !== 'undefined') {
+    window.API = API;
+    window.ColdStartUI = ColdStartUI;
     window.addEventListener('DOMContentLoaded', () => {
         API.warmup();
     });

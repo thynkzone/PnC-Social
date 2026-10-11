@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
+    <title>People You May Know - P&amp;C</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1d2226">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/modern-ui.css">
+    <style>
+        .pymk-container {
+            max-width: 960px;
+            margin: 20px auto 40px;
+            padding: 0 16px;
+        }
+
+        .pymk-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .pymk-card {
+            background: var(--li-bg-surface);
+            border: 1px solid var(--li-border);
+            border-radius: var(--li-radius-md);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            transition: transform 0.15s, border-color 0.15s;
+        }
+        .pymk-card:hover {
+            border-color: var(--li-primary);
+            transform: translateY(-2px);
+        }
+
+        .pymk-card-cover {
+            height: 60px;
+            background-color: #0a66c2 !important; /* Authentic solid blue default */
+            position: relative;
+        }
+
+        .pymk-avatar-wrap {
+            margin-top: -36px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .pymk-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--li-bg-surface);
+            background: var(--li-bg-surface);
+        }
+
+        .pymk-info {
+            padding: 0 14px 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pymk-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pymk-name:hover {
+            color: var(--li-primary);
+            text-decoration: underline;
+        }
+
+        .pymk-headline {
+            font-size: 12px;
+            color: var(--li-text-secondary);
+            margin-top: 2px;
+            min-height: 32px;
+            line-height: 1.35;
+        }
+
+        .pymk-meta {
+            font-size: 11px;
+            color: var(--li-text-muted);
+            margin: 6px 0 12px;
+        }
+
+        .pymk-actions {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LinkedIn Top Navbar (Logo Only for branding) -->
+    <header class="li-navbar">
+        <div class="li-nav-inner">
+            <div class="li-nav-left">
+                <!-- Only logo for title/brand, no text -->
+                <a href="/index.html" class="li-logo-link" title="P&amp;C Home">
+                    <img src="/icon/p&c.png" alt="P&amp;C" class="li-logo-img">
+                </a>
+                
+                <div class="li-search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="globalNavSearch" class="li-search-input" placeholder="Search people, topics..." onkeydown="if(event.key==='Enter') window.location.href='/search-user.html?q='+encodeURIComponent(this.value)">
+                </div>
+            </div>
+
+            <nav class="li-nav-menu">
+                <a href="/index.html" class="li-nav-item" title="Home Feed">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Home</span>
+                </a>
+                <a href="/following.html" class="li-nav-item" title="My Network">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>My Network</span>
+                </a>
+                <a href="/advertisements.html" class="li-nav-item" title="Ads &amp; Campaigns">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Ads</span>
+                </a>
+                <a href="/post-updates.html" class="li-nav-item" title="Notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+                
+                <!-- Authenticated User Dropdown -->
+                <div class="li-nav-item" id="navMeItem" style="display: none;" onclick="toggleMeDropdown(event)">
+                    <img id="navAvatar" class="li-nav-avatar" src="/images/prof.png" alt="Profile">
+                    <span style="display: flex; align-items: center; gap: 2px;">Me <i class="fa-solid fa-caret-down" style="font-size: 9px;"></i></span>
+
+                    <div class="li-dropdown-menu" id="meDropdownMenu">
+                        <div style="padding: 10px 16px; display: flex; gap: 10px; align-items: center;">
+                            <img id="menuAvatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" src="/images/prof.png" alt="User">
+                            <div style="min-width: 0;">
+                                <div id="menuName" style="font-weight: 700; font-size: 13px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                                <div id="menuHeadline" style="font-size: 11px; color: var(--li-text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Professional</div>
+                            </div>
+                        </div>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="/profile.html" id="menuProfileLink" class="li-dropdown-item"><i class="fa-solid fa-user"></i> View Profile</a>
+                        <a href="/view-all-requests.html" class="li-dropdown-item"><i class="fa-solid fa-user-clock"></i> Pending Requests</a>
+                        <a href="/settings.html" class="li-dropdown-item"><i class="fa-solid fa-gear"></i> Settings &amp; Privacy</a>
+                        <div class="li-dropdown-divider"></div>
+                        <a href="javascript:void(0)" onclick="handleLogout()" class="li-dropdown-item" style="color: var(--li-danger);"><i class="fa-solid fa-right-from-bracket"></i> Sign Out</a>
+                    </div>
+                </div>
+
+                <a href="/login.html" id="navLoginBtn" class="li-btn-primary" style="margin-left: 8px; font-size: 13px; padding: 6px 16px;">
+                    Sign In
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="pymk-container">
+
+        <!-- Top Header & Back Button -->
+        <div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <button onclick="if(history.length>1){history.back()}else{window.location.href='/index.html'}" class="li-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Feed
+            </button>
+            <div style="font-size: 13px; color: var(--li-text-muted);">
+                Suggested from your workplace network &amp; mutual coworkers
+            </div>
+        </div>
+
+        <div class="li-card" style="padding: 20px 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--li-border-light); padding-bottom: 14px;">
+                <div>
+                    <h1 style="font-size: 20px; font-weight: 700; color: #fff;">People You May Know</h1>
+                    <p style="font-size: 13px; color: var(--li-text-secondary); margin-top: 2px;">Expand your network by connecting with colleagues and peers</p>
+                </div>
+                <a href="/search-user.html" class="li-btn-secondary" style="font-size: 13px; padding: 6px 16px;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search Directory
+                </a>
+            </div>
+
+            <div id="pymkList" class="pymk-grid">
+                <p style="text-align: center; color: var(--li-text-muted); grid-column: 1 / -1; padding: 50px;">Loading recommendations...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/js/api.js?v=2.2"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const meRes = await API.getCurrentUser();
+                if (meRes && meRes.success) {
+                    setupNavbarMe(meRes.data);
+                }
+            } catch (err) {}
+
+            loadPeopleYouMayKnow();
+        });
+
+        function setupNavbarMe(user) {
+            document.getElementById('navLoginBtn').style.display = 'none';
+            const navMe = document.getElementById('navMeItem');
+            navMe.style.display = 'flex';
+            if (user.profilePic) {
+                const pic = user.profilePic.startsWith('http') ? user.profilePic : `/images/${user.profilePic}`;
+                document.getElementById('navAvatar').src = pic;
+                document.getElementById('menuAvatar').src = pic;
+            }
+            document.getElementById('menuName').innerText = user.fullName || 'User';
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} • ${user.rating || 0} pts`;
+            document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
+        }
+
+        function toggleMeDropdown(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('meDropdownMenu');
+            menu.classList.toggle('show');
+        }
+
+        document.addEventListener('click', () => {
+            const menu = document.getElementById('meDropdownMenu');
+            if (menu) menu.classList.remove('show');
+        });
+
+        async function handleLogout() {
+            try {
+                await API.logout();
+            } finally {
+                window.location.href = '/login.html';
+            }
+        }
+
+        async function loadPeopleYouMayKnow() {
+            const container = document.getElementById('pymkList');
+            try {
+                const res = await API.getSuggestions();
+                container.innerHTML = '';
+                if (!res.data || res.data.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--li-text-muted); grid-column: 1 / -1; padding: 50px;">No recommendations available right now. Check back soon!</p>';
+                    return;
+                }
+
+                res.data.forEach(u => {
+                    const avatar = u.profilePic && u.profilePic.startsWith('http') ? u.profilePic : `/images/${u.profilePic || 'prof.png'}`;
+                    const card = document.createElement('div');
+                    card.className = 'pymk-card';
+                    card.id = `pymk-card-${u.id}`;
+                    card.innerHTML = `
+                        <div class="pymk-card-cover"></div>
+                        <div class="pymk-avatar-wrap">
+                            <a href="/profile.html?userId=${u.id}">
+                                <img class="pymk-avatar" src="${avatar}" alt="${escapeHtml(u.fullName || 'User')}">
+                            </a>
+                        </div>
+                        <div class="pymk-info">
+                            <a href="/profile.html?userId=${u.id}" class="pymk-name">${escapeHtml(u.fullName || 'User')}</a>
+                            <div class="pymk-headline">${escapeHtml(u.rank || 'Member')} &bull; ${escapeHtml(u.place || 'Workplace')}</div>
+                            <div class="pymk-meta"><i class="fa-solid fa-users" style="color: var(--li-primary);"></i> Suggested for you</div>
+                            <div class="pymk-actions">
+                                <button class="li-btn-primary" style="width: 100%; font-size: 13px; padding: 7px 12px;" onclick="connectWith('${u.id}', this)">
+                                    <i class="fa-solid fa-user-plus"></i> Add Co-worker
+                                </button>
+                                <button class="li-btn-secondary" style="width: 100%; font-size: 13px; padding: 6px 12px;" onclick="followUser('${u.id}', this)">
+                                    <i class="fa-solid fa-plus"></i> Follow
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                container.innerHTML = `<p style="color: var(--li-danger); text-align: center; grid-column: 1 / -1; padding: 40px;">${err.message}</p>`;
+            }
+        }
+
+        async function connectWith(userId, btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-clock"></i> Request Sent';
+            try {
+                await API.sendCoworkerRequest(userId);
+                showToast('Co-worker request sent!');
+            } catch (err) {
+                showToast(err.message, true);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Add Co-worker';
+            }
+        }
+
+        async function followUser(userId, btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Following';
+            try {
+                await API.follow(userId);
+                showToast('Now following!');
+            } catch (err) {
+                showToast(err.message, true);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-plus"></i> Follow';
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+            })[m]);
+        }
+    </script>
+</body>
+</html>

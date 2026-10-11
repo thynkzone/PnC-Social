@@ -4,14 +4,20 @@
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
     <title>Support - P&amp;C</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/modern-ui.css">
 </head>
 <body class="li-auth-page">
 
     <!-- Top Logo Only for Title / Branding -->
-    <div style="margin-bottom: 24px; text-align: center;">
+    <div style="margin-bottom: 24px; text-align: center; position: relative; max-width: 460px; width: 100%;">
+        <div style="position: absolute; left: 0; top: 8px;">
+            <button onclick="if(history.length>1){history.back()}else{window.location.href='/index.html'}" class="li-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+        </div>
         <a href="/index.html" class="li-logo-link" title="Home">
             <img src="/icon/p&c.png" alt="Logo" style="width: 48px; height: 48px; border-radius: 8px;">
         </a>

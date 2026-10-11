@@ -4,7 +4,8 @@
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
     <title>Settings &amp; Privacy - P&amp;C</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
@@ -98,6 +99,13 @@
 
     <div class="settings-container">
 
+        <!-- Top Header & Back Button -->
+        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <button onclick="if(history.length>1){history.back()}else{window.location.href='/index.html'}" class="li-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Feed
+            </button>
+        </div>
+
         <!-- Edit Profile Card -->
         <div class="li-card">
             <div class="settings-header">
@@ -127,11 +135,11 @@
                         </div>
                     </div>
 
-                    <!-- Cover Upload -->
+                    <!-- Cover Upload (Solid Blue default) -->
                     <div style="margin-bottom: 24px;">
                         <div style="font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 8px;">Cover Background Banner</div>
-                        <div style="position: relative; height: 130px; border-radius: var(--li-radius-md); overflow: hidden; border: 1px solid var(--li-border);">
-                            <img id="settingsCoverPreview" src="/images/prof.png" style="width: 100%; height: 100%; object-fit: cover;" alt="Cover">
+                        <div style="position: relative; height: 130px; border-radius: var(--li-radius-md); overflow: hidden; border: 1px solid var(--li-border); background-color: #0a66c2;">
+                            <img id="settingsCoverPreview" style="display: none; width: 100%; height: 100%; object-fit: cover;" alt="Cover">
                             <button type="button" onclick="document.getElementById('settingsCoverFile').click()" class="li-btn-secondary" style="position: absolute; right: 12px; bottom: 12px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); font-size: 12px; padding: 6px 14px;">
                                 <i class="fa-solid fa-camera"></i> Change Cover
                             </button>
@@ -186,7 +194,7 @@
 
     </div>
 
-    <script src="/js/api.js"></script>
+    <script src="/js/api.js?v=2.2"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -205,7 +213,9 @@
                         document.getElementById('settingsAvatarPreview').src = p.profilePic.startsWith('http') ? p.profilePic : `/images/${p.profilePic}`;
                     }
                     if (p.backgroundPic) {
-                        document.getElementById('settingsCoverPreview').src = p.backgroundPic.startsWith('http') ? p.backgroundPic : `/images/${p.backgroundPic}`;
+                        const coverEl = document.getElementById('settingsCoverPreview');
+                        coverEl.src = p.backgroundPic.startsWith('http') ? p.backgroundPic : `/images/${p.backgroundPic}`;
+                        coverEl.style.display = 'block';
                     }
                 }
             } catch (err) {
@@ -244,11 +254,12 @@
             try {
                 showToast('Uploading profile photo...');
                 const uploadRes = await API.uploadImage(file, 'profiles');
-                if (!uploadRes || !uploadRes.downloadUrl) {
+                const imgUrl = uploadRes ? (uploadRes.downloadUrl || uploadRes.publicUrl) : null;
+                if (!imgUrl) {
                     throw new Error('Upload failed: No image URL returned');
                 }
-                await API.updateProfilePicture(uploadRes.downloadUrl);
-                document.getElementById('settingsAvatarPreview').src = uploadRes.downloadUrl;
+                await API.updateProfilePicture(imgUrl);
+                document.getElementById('settingsAvatarPreview').src = imgUrl;
                 showToast('Profile photo updated!');
             } catch (err) {
                 showToast(err.message || 'Upload failed', true);
@@ -263,11 +274,14 @@
             try {
                 showToast('Uploading cover photo...');
                 const uploadRes = await API.uploadImage(file, 'covers');
-                if (!uploadRes || !uploadRes.downloadUrl) {
+                const imgUrl = uploadRes ? (uploadRes.downloadUrl || uploadRes.publicUrl) : null;
+                if (!imgUrl) {
                     throw new Error('Upload failed: No image URL returned');
                 }
-                await API.updateBackgroundPicture(uploadRes.downloadUrl);
-                document.getElementById('settingsCoverPreview').src = uploadRes.downloadUrl;
+                await API.updateBackgroundPicture(imgUrl);
+                const coverEl = document.getElementById('settingsCoverPreview');
+                coverEl.src = imgUrl;
+                coverEl.style.display = 'block';
                 showToast('Cover photo updated!');
             } catch (err) {
                 showToast(err.message || 'Upload failed', true);

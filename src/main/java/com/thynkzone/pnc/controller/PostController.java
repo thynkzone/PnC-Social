@@ -129,6 +129,25 @@ public class PostController {
                 .body(ApiResponse.ok("Comment added.", comment));
     }
 
+    @PutMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<ApiResponse<CommentDto>> updateComment(
+            @PathVariable String postId,
+            @PathVariable Long commentId,
+            @RequestBody Map<String, String> payload,
+            HttpServletRequest request) {
+        String currentUserId = authService.getCurrentUserId(request);
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Authentication required to edit comment"));
+        }
+        String commentText = payload.get("commentText");
+        if (commentText == null || commentText.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Comment cannot be empty"));
+        }
+        CommentDto updated = postService.updateComment(commentId, currentUserId, commentText);
+        return ResponseEntity.ok(ApiResponse.ok("Comment updated successfully.", updated));
+    }
+
     @DeleteMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable String postId,

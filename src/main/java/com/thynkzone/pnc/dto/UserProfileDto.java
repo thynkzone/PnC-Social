@@ -1,5 +1,7 @@
 package com.thynkzone.pnc.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record UserProfileDto(
         String id,
         String firstName,
@@ -20,8 +22,28 @@ public record UserProfileDto(
         long followersCount,
         long followingCount,
         long coworkersCount,
-        boolean isCoworker,
-        boolean isFollowing,
-        boolean isRequestSent,
-        boolean isRequestReceived
-) {}
+        @JsonProperty("isCoworker") boolean isCoworker,
+        @JsonProperty("isFollowing") boolean isFollowing,
+        @JsonProperty("isRequestSent") boolean isRequestSent,
+        @JsonProperty("isRequestReceived") boolean isRequestReceived
+) {
+    @JsonProperty("coworker")
+    public boolean coworker() {
+        return isCoworker;
+    }
+
+    @JsonProperty("following")
+    public boolean following() {
+        return isFollowing;
+    }
+
+    @JsonProperty("requestSent")
+    public boolean requestSent() {
+        return isRequestSent;
+    }
+
+    @JsonProperty("requestReceived")
+    public boolean requestReceived() {
+        return isRequestReceived;
+    }
+}

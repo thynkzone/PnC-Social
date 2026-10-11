@@ -4,7 +4,8 @@
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
     <title>My Network - P&amp;C</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
@@ -161,11 +162,23 @@
     </header>
 
     <div class="network-container">
+        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <button onclick="if(history.length>1){history.back()}else{window.location.href='/index.html'}" class="li-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Feed
+            </button>
+            <a href="/people-you-may-know.html" class="li-btn-primary" style="font-size: 13px; padding: 6px 14px;">
+                <i class="fa-solid fa-user-plus"></i> Find People You May Know
+            </a>
+        </div>
+
         <div class="li-card">
             <div class="network-tabs">
                 <button class="network-tab-btn active" onclick="switchTab('coworkers', this)">Co-workers</button>
                 <button class="network-tab-btn" onclick="switchTab('following', this)">Following</button>
                 <button class="network-tab-btn" onclick="switchTab('followers', this)">Followers</button>
+                <a href="/people-you-may-know.html" class="network-tab-btn" style="text-decoration: none; color: var(--li-text-secondary);">
+                    <i class="fa-solid fa-lightbulb"></i> Suggestions
+                </a>
                 <a href="/view-all-requests.html" class="network-tab-btn" style="text-decoration: none; margin-left: auto; border: 1px solid var(--li-primary); color: var(--li-primary);">
                     <i class="fa-solid fa-user-clock"></i> Pending Requests
                 </a>
@@ -177,7 +190,7 @@
         </div>
     </div>
 
-    <script src="/js/api.js"></script>
+    <script src="/js/api.js?v=2.2"></script>
     <script>
         let currentTab = 'coworkers';
 

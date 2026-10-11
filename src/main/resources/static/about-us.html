@@ -4,7 +4,8 @@
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
     <title>About - P&amp;C</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/modern-ui.css">
 </head>
@@ -30,7 +31,12 @@
         </div>
     </header>
 
-    <div style="max-width: 760px; margin: 40px auto; padding: 0 16px; flex: 1; width: 100%;">
+    <div style="max-width: 760px; margin: 20px auto 40px; padding: 0 16px; flex: 1; width: 100%;">
+        <div style="margin-bottom: 12px;">
+            <button onclick="if(history.length>1){history.back()}else{window.location.href='/index.html'}" class="li-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+        </div>
         <div class="li-card" style="padding: 36px 32px;">
             <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 24px;">
                 <img src="/icon/p&c.png" alt="P&amp;C" style="width: 44px; height: 44px; border-radius: 8px;">

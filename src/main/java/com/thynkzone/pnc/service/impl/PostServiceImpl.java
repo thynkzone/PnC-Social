@@ -220,6 +220,34 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
+    public CommentDto updateComment(Long commentId, String actorId, String newText) {
+        Notification comment = notificationRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));
+
+        if (!comment.getActorId().equals(actorId)) {
+            throw new SecurityException("You are not authorized to edit this comment.");
+        }
+
+        comment.setCommentText(newText.trim());
+        Notification saved = notificationRepository.save(comment);
+
+        UserProfile actorProfile = userProfileRepository.findById(actorId).orElse(null);
+        String fullName = actorProfile != null ? actorProfile.getFullName() : saved.getActorFullName();
+        String pic = actorProfile != null ? actorProfile.getProfilePic() : null;
+
+        return new CommentDto(
+                saved.getId(),
+                actorId,
+                fullName,
+                pic,
+                saved.getCommentText(),
+                saved.getCreatedAt(),
+                true
+        );
+    }
+
+    @Override
+    @Transactional
     public void deleteComment(Long commentId, String actorId) {
         Notification comment = notificationRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("Comment not found: " + commentId));

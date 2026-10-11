@@ -26,6 +26,8 @@ public interface PostService {
 
     CommentDto addComment(String postId, String actorId, String commentText);
 
+    CommentDto updateComment(Long commentId, String actorId, String commentText);
+
     void deleteComment(Long commentId, String actorId);
 
     void hidePost(String postId, String actorId);

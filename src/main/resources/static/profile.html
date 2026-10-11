@@ -4,7 +4,8 @@
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
     <title>Profile - P&amp;C</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
@@ -283,11 +284,18 @@
 
     <div class="profile-container">
 
+        <!-- Top Header & Back Button -->
+        <div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+            <button onclick="if(history.length>1){history.back()}else{window.location.href='/index.html'}" class="li-back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Feed
+            </button>
+        </div>
+
         <!-- Profile Hero Card -->
         <div class="li-card profile-header-card">
-            <!-- Cover Photo -->
-            <div class="cover-photo-wrap">
-                <img id="coverImg" class="cover-photo-img" src="/images/prof.png" alt="Cover photo">
+            <!-- Cover Photo (Solid Blue by default) -->
+            <div class="cover-photo-wrap" style="background-color: #0a66c2;">
+                <img id="coverImg" class="cover-photo-img" style="display: none;" alt="Cover photo">
                 <button id="coverUploadBtn" type="button" class="cover-edit-btn" onclick="document.getElementById('coverFileInput').click()">
                     <i class="fa-solid fa-camera"></i> Change cover
                 </button>
@@ -359,10 +367,11 @@
 
     </div>
 
-    <script src="/js/api.js"></script>
+    <script src="/js/api.js?v=2.2"></script>
     <script>
         let currentAuthUser = null;
         let viewedUserId = null;
+        let cachedProfile = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -438,10 +447,15 @@
                 if (p.profilePic) {
                     document.getElementById('profileAvatar').src = p.profilePic.startsWith('http') ? p.profilePic : `/images/${p.profilePic}`;
                 }
-                if (p.backgroundPic) {
-                    document.getElementById('coverImg').src = p.backgroundPic.startsWith('http') ? p.backgroundPic : `/images/${p.backgroundPic}`;
+                if (p.backgroundPic && !p.backgroundPic.includes('prof.png')) {
+                    const coverEl = document.getElementById('coverImg');
+                    coverEl.src = p.backgroundPic.startsWith('http') ? p.backgroundPic : `/images/${p.backgroundPic}`;
+                    coverEl.style.display = 'block';
+                } else {
+                    document.getElementById('coverImg').style.display = 'none';
                 }
 
+                cachedProfile = p;
                 renderActionButtons(p);
             } catch (err) {
                 showToast(err.message, true);
@@ -469,19 +483,24 @@
                 return;
             }
 
+            const isCoworker = Boolean(p.isCoworker || p.coworker);
+            const isRequestSent = Boolean(p.isRequestSent || p.requestSent);
+            const isRequestReceived = Boolean(p.isRequestReceived || p.requestReceived);
+            const isFollowing = Boolean(p.isFollowing || p.following);
+
             // Coworker button
-            if (p.coworker) {
+            if (isCoworker) {
                 container.innerHTML += `<button class="li-btn-secondary" onclick="disconnectCoworker()"><i class="fa-solid fa-user-check"></i> Co-worker</button>`;
-            } else if (p.requestSent) {
+            } else if (isRequestSent) {
                 container.innerHTML += `<button class="li-btn-secondary" onclick="cancelRequest()"><i class="fa-solid fa-clock"></i> Request Sent</button>`;
-            } else if (p.requestReceived) {
+            } else if (isRequestReceived) {
                 container.innerHTML += `<button class="li-btn-primary" onclick="acceptRequest()"><i class="fa-solid fa-user-plus"></i> Accept Request</button>`;
             } else {
                 container.innerHTML += `<button class="li-btn-primary" onclick="sendRequest()"><i class="fa-solid fa-user-plus"></i> Add Co-worker</button>`;
             }
 
             // Follow button
-            if (p.following) {
+            if (isFollowing) {
                 container.innerHTML += `<button class="li-btn-secondary" onclick="unfollow()"><i class="fa-solid fa-check"></i> Following</button>`;
             } else {
                 container.innerHTML += `<button class="li-btn-secondary" onclick="follow()"><i class="fa-solid fa-plus"></i> Follow</button>`;
@@ -520,39 +539,94 @@
         }
 
         async function sendRequest() {
-            await API.sendCoworkerRequest(viewedUserId);
-            showToast('Co-worker request sent!');
+            if (cachedProfile) {
+                cachedProfile.isRequestSent = true;
+                cachedProfile.requestSent = true;
+                renderActionButtons(cachedProfile);
+            }
+            try {
+                await API.sendCoworkerRequest(viewedUserId);
+                showToast('Co-worker request sent!');
+            } catch (err) {
+                showToast(err.message, true);
+            }
             loadProfile(viewedUserId);
         }
 
         async function acceptRequest() {
-            await API.acceptCoworkerRequest(viewedUserId);
-            showToast('Connected as co-workers!');
+            if (cachedProfile) {
+                cachedProfile.isCoworker = true;
+                cachedProfile.coworker = true;
+                cachedProfile.isRequestReceived = false;
+                renderActionButtons(cachedProfile);
+            }
+            try {
+                await API.acceptCoworkerRequest(viewedUserId);
+                showToast('Connected as co-workers!');
+            } catch (err) {
+                showToast(err.message, true);
+            }
             loadProfile(viewedUserId);
         }
 
         async function cancelRequest() {
-            await API.cancelCoworkerRequest(viewedUserId);
-            showToast('Request cancelled.');
+            if (cachedProfile) {
+                cachedProfile.isRequestSent = false;
+                cachedProfile.requestSent = false;
+                renderActionButtons(cachedProfile);
+            }
+            try {
+                await API.cancelCoworkerRequest(viewedUserId);
+                showToast('Request cancelled.');
+            } catch (err) {
+                showToast(err.message, true);
+            }
             loadProfile(viewedUserId);
         }
 
         async function disconnectCoworker() {
             if (!confirm('Disconnect from this co-worker?')) return;
-            await API.disconnectCoworker(viewedUserId);
-            showToast('Disconnected.');
+            if (cachedProfile) {
+                cachedProfile.isCoworker = false;
+                cachedProfile.coworker = false;
+                renderActionButtons(cachedProfile);
+            }
+            try {
+                await API.disconnectCoworker(viewedUserId);
+                showToast('Disconnected.');
+            } catch (err) {
+                showToast(err.message, true);
+            }
             loadProfile(viewedUserId);
         }
 
         async function follow() {
-            await API.follow(viewedUserId);
-            showToast('Now following!');
+            if (cachedProfile) {
+                cachedProfile.isFollowing = true;
+                cachedProfile.following = true;
+                renderActionButtons(cachedProfile);
+            }
+            try {
+                await API.follow(viewedUserId);
+                showToast('Now following!');
+            } catch (err) {
+                showToast(err.message, true);
+            }
             loadProfile(viewedUserId);
         }
 
         async function unfollow() {
-            await API.unfollow(viewedUserId);
-            showToast('Unfollowed.');
+            if (cachedProfile) {
+                cachedProfile.isFollowing = false;
+                cachedProfile.following = false;
+                renderActionButtons(cachedProfile);
+            }
+            try {
+                await API.unfollow(viewedUserId);
+                showToast('Unfollowed.');
+            } catch (err) {
+                showToast(err.message, true);
+            }
             loadProfile(viewedUserId);
         }
 

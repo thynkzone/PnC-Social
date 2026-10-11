@@ -1,6 +1,5 @@
 package com.thynkzone.pnc.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -12,78 +11,85 @@ public class LegacyViewController {
         return "forward:/index.html";
     }
 
-    @GetMapping("/login.jsp")
+    @GetMapping({"/login", "/login.jsp"})
     public String login() {
         return "forward:/login.html";
     }
 
-    @GetMapping("/signup.jsp")
+    @GetMapping({"/signup", "/signup.jsp", "/register"})
     public String signup() {
         return "forward:/signup.html";
     }
 
-    @GetMapping("/verify-code.jsp")
+    @GetMapping({"/verify-code", "/verify-code.jsp", "/verify"})
     public String verifyCode() {
         return "forward:/verify-code.html";
     }
 
-    @GetMapping("/profile.jsp")
+    @GetMapping({"/profile", "/profile.jsp"})
     public String profile() {
         return "forward:/profile.html";
     }
 
-    @GetMapping("/settings.jsp")
+    @GetMapping({"/settings", "/settings.jsp"})
     public String settings() {
         return "forward:/settings.html";
     }
 
-    @GetMapping("/following.jsp")
+    @GetMapping({"/following", "/following.jsp", "/network"})
     public String following() {
         return "forward:/following.html";
     }
 
-    @GetMapping("/post-updates.jsp")
+    @GetMapping({"/post-updates", "/post-updates.jsp", "/notifications"})
     public String postUpdates() {
         return "forward:/post-updates.html";
     }
 
-    @GetMapping("/add-information.jsp")
+    @GetMapping({"/add-information", "/add-information.jsp"})
     public String addInformation() {
         return "forward:/add-information.html";
     }
 
-    @GetMapping("/search-user.jsp")
+    @GetMapping({"/search-user", "/search-user.jsp", "/search"})
     public String searchUser() {
         return "forward:/search-user.html";
     }
 
-    @GetMapping("/view-all-requests.jsp")
+    @GetMapping({"/view-all-requests", "/view-all-requests.jsp", "/requests"})
     public String viewRequests() {
         return "forward:/view-all-requests.html";
     }
 
-    @GetMapping("/about-us.jsp")
+    @GetMapping({"/about-us", "/about-us.jsp", "/about"})
     public String aboutUs() {
         return "forward:/about-us.html";
     }
 
-    @GetMapping("/support.jsp")
+    @GetMapping({"/support", "/support.jsp", "/help"})
     public String support() {
         return "forward:/support.html";
     }
 
-    @GetMapping("/terms-and-conditions.jsp")
+    @GetMapping({"/terms-and-conditions", "/terms-and-conditions.jsp", "/terms", "/privacy"})
     public String terms() {
         return "forward:/terms-and-conditions.html";
     }
 
-    @GetMapping({"/advertisements.jsp", "/advertisements.html", "/manage-ads.jsp"})
+    // Do NOT include static .html target in forward mappings to avoid circular view dispatch
+    @GetMapping({"/advertisements", "/advertisement", "/ads", "/advertisements.jsp", "/manage-ads.jsp", "/manage-ads"})
     public String advertisements() {
         return "forward:/advertisements.html";
     }
 
-    @GetMapping({"/forgot-password.jsp", "/forgot-password.html", "/reset-password.jsp", "/reset-password.html", "/forgot.jsp", "/forgot.html"})
+    @GetMapping({"/forgot-password", "/forgotpass", "/reset-password", "/forgot", 
+                 "/forgot-password.jsp", "/reset-password.jsp", "/forgotpass.jsp", "/forgot.jsp", "/loginforgot.jsp"})
     public String forgotPassword() {
         return "forward:/forgot-password.html";
+    }
+
+    @GetMapping({"/people-you-may-know", "/people-you-may-know.jsp", "/suggestions"})
+    public String peopleYouMayKnow() {
+        return "forward:/people-you-may-know.html";
     }
 }
