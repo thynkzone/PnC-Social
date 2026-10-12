@@ -139,14 +139,11 @@
 
                 <div class="li-form-group">
                     <label class="li-label">Banner Image</label>
-                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                        <label class="li-btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center; position: relative; overflow: hidden;">
-                            <input type="file" id="adImageFile" accept="image/*" class="visually-hidden-file-input" onchange="handleAdImageSelect(event)">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="file" id="adImageFile" accept="image/*" class="visually-hidden-file-input" onchange="handleAdImageSelect(event)">
+                        <label for="adImageFile" class="li-btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center;">
                             <i class="fa-solid fa-image" style="margin-right: 6px;"></i> Select Image
                         </label>
-                        <button type="button" class="li-btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center;" onclick="promptAdImageUrl()">
-                            <i class="fa-solid fa-link" style="margin-right: 6px;"></i> Image URL
-                        </button>
                         <span id="adFileName" style="color: var(--li-text-secondary); font-size: 13px;">No file chosen</span>
                     </div>
                     <img id="adImagePreview" style="display: none; max-height: 140px; border-radius: var(--li-radius-sm); margin-top: 12px; object-fit: cover; border: 1px solid var(--li-border);">
@@ -191,7 +188,6 @@
     <script src="/js/api.js?v=2.2"></script>
     <script>
         let selectedAdImageFile = null;
-        let selectedAdImageUrl = '';
 
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -270,21 +266,9 @@
             const file = e.target.files[0];
             if (!file) return;
             selectedAdImageFile = file;
-            selectedAdImageUrl = '';
             document.getElementById('adFileName').innerText = file.name;
             const preview = document.getElementById('adImagePreview');
             preview.src = URL.createObjectURL(file);
-            preview.style.display = 'block';
-        }
-
-        function promptAdImageUrl() {
-            const url = prompt('Enter direct image URL for your banner ad:');
-            if (!url || !url.trim()) return;
-            selectedAdImageUrl = url.trim();
-            selectedAdImageFile = null;
-            document.getElementById('adFileName').innerText = 'Using Image URL';
-            const preview = document.getElementById('adImagePreview');
-            preview.src = selectedAdImageUrl;
             preview.style.display = 'block';
         }
 
@@ -295,7 +279,7 @@
             submitBtn.innerText = 'Uploading & Launching...';
 
             try {
-                let picUrl = selectedAdImageUrl || '';
+                let picUrl = '';
                 if (selectedAdImageFile) {
                     const uploadResult = await API.uploadImage(selectedAdImageFile, 'ads');
                     picUrl = uploadResult.publicUrl || uploadResult.downloadUrl;
@@ -313,7 +297,6 @@
                     showToast('Campaign launched successfully!');
                     document.getElementById('adForm').reset();
                     selectedAdImageFile = null;
-                    selectedAdImageUrl = '';
                     document.getElementById('adFileName').innerText = 'No file chosen';
                     document.getElementById('adImagePreview').style.display = 'none';
                     loadAds();

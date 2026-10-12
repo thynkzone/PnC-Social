@@ -296,20 +296,20 @@
             <!-- Cover Photo (Solid Blue by default) -->
             <div class="cover-photo-wrap" style="background-color: #0a66c2;">
                 <img id="coverImg" class="cover-photo-img" style="display: none;" alt="Cover photo">
-                <label id="coverUploadBtn" class="cover-edit-btn" style="cursor: pointer; display: none; position: relative; overflow: hidden;">
-                    <input type="file" id="coverFileInput" accept="image/*" class="visually-hidden-file-input" onchange="handleCoverUpload(event)">
+                <label id="coverUploadBtn" for="coverFileInput" class="cover-edit-btn" style="cursor: pointer; display: none;">
                     <i class="fa-solid fa-camera"></i> Change cover
                 </label>
+                <input type="file" id="coverFileInput" accept="image/*" class="visually-hidden-file-input" onchange="handleCoverUpload(event)">
             </div>
 
             <!-- Avatar & Action Buttons Bar -->
             <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 24px; position: relative;">
                 <div class="avatar-edit-wrap">
                     <img id="profileAvatar" class="avatar-img-main" src="/images/prof.png" alt="Profile avatar">
-                    <label id="avatarUploadBtn" class="avatar-edit-btn" style="cursor: pointer; display: none; position: relative; overflow: hidden;">
-                        <input type="file" id="avatarFileInput" accept="image/*" class="visually-hidden-file-input" onchange="handleAvatarUpload(event)">
+                    <label id="avatarUploadBtn" for="avatarFileInput" class="avatar-edit-btn" style="cursor: pointer; display: none;">
                         <i class="fa-solid fa-camera"></i>
                     </label>
+                    <input type="file" id="avatarFileInput" accept="image/*" class="visually-hidden-file-input" onchange="handleAvatarUpload(event)">
                 </div>
 
                 <div id="actionButtons" style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;"></div>

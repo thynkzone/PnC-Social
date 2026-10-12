@@ -421,15 +421,15 @@ body.mobile-app-view .li-navbar {
     box-sizing: content-box;
 }
 
-/* Cross-Platform Accessible File Input Overlay */
+/* Cross-Platform Accessible File Input */
 .visually-hidden-file-input {
     position: absolute !important;
-    inset: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
+    width: 0.1px !important;
+    height: 0.1px !important;
     opacity: 0 !important;
-    cursor: pointer !important;
-    z-index: 5 !important;
+    overflow: hidden !important;
+    z-index: -1 !important;
+    pointer-events: none !important;
 }
 
 /* Reusable Ultra-Modern Glassmorphic Back Button */

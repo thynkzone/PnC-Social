@@ -118,26 +118,20 @@
                 <form id="profileForm" onsubmit="saveProfile(event)">
                     
                     <!-- Avatar Upload -->
-                    <div style="display: flex; gap: 18px; margin-bottom: 24px; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 18px; margin-bottom: 24px; align-items: center;">
                         <div style="position: relative; width: 84px; height: 84px;">
                             <img id="settingsAvatarPreview" src="/images/prof.png" style="width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 2px solid var(--li-border);" alt="Avatar">
-                            <label style="position: absolute; right: 0; bottom: 0; background: var(--li-primary); color: #fff; border: 2px solid var(--li-bg-surface); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; overflow: hidden;">
-                                <input type="file" id="settingsAvatarFile" accept="image/*" class="visually-hidden-file-input" onchange="uploadSettingsAvatar(event)">
+                            <label for="settingsAvatarFile" style="position: absolute; right: 0; bottom: 0; background: var(--li-primary); color: #fff; border: 2px solid var(--li-bg-surface); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">
                                 <i class="fa-solid fa-camera"></i>
                             </label>
+                            <input type="file" id="settingsAvatarFile" accept="image/*" class="visually-hidden-file-input" onchange="uploadSettingsAvatar(event)">
                         </div>
                         <div>
                             <div style="font-weight: 700; font-size: 14px; color: #fff;">Profile Photo</div>
                             <div style="font-size: 12px; color: var(--li-text-secondary); margin-bottom: 8px;">Direct Cloudflare R2 object storage</div>
-                            <div style="display: flex; gap: 8px; align-items: center;">
-                                <label class="li-btn-secondary" style="font-size: 12px; padding: 5px 12px; cursor: pointer; display: inline-flex; align-items: center; position: relative; overflow: hidden;">
-                                    <input type="file" accept="image/*" class="visually-hidden-file-input" onchange="uploadSettingsAvatar(event)">
-                                    <i class="fa-solid fa-camera" style="margin-right: 4px;"></i> Upload
-                                </label>
-                                <button type="button" class="li-btn-secondary" style="font-size: 12px; padding: 5px 12px; cursor: pointer; display: inline-flex; align-items: center;" onclick="setAvatarByUrl()">
-                                    <i class="fa-solid fa-link" style="margin-right: 4px;"></i> Paste URL
-                                </button>
-                            </div>
+                            <label for="settingsAvatarFile" class="li-btn-secondary" style="font-size: 12px; padding: 5px 12px; cursor: pointer; display: inline-flex; align-items: center;">
+                                Change Photo
+                            </label>
                         </div>
                     </div>
 
@@ -146,15 +140,10 @@
                         <div style="font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 8px;">Cover Background Banner</div>
                         <div style="position: relative; height: 130px; border-radius: var(--li-radius-md); overflow: hidden; border: 1px solid var(--li-border); background-color: #0a66c2;">
                             <img id="settingsCoverPreview" style="display: none; width: 100%; height: 100%; object-fit: cover;" alt="Cover">
-                            <div style="position: absolute; right: 12px; bottom: 12px; display: flex; gap: 8px; z-index: 10;">
-                                <label class="li-btn-secondary" style="background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); font-size: 12px; padding: 6px 14px; cursor: pointer; display: inline-flex; align-items: center; position: relative; overflow: hidden;">
-                                    <input type="file" id="settingsCoverFile" accept="image/*" class="visually-hidden-file-input" onchange="uploadSettingsCover(event)">
-                                    <i class="fa-solid fa-camera" style="margin-right: 6px;"></i> Change Cover
-                                </label>
-                                <button type="button" class="li-btn-secondary" style="background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); font-size: 12px; padding: 6px 12px; cursor: pointer; display: inline-flex; align-items: center;" onclick="setCoverByUrl()">
-                                    <i class="fa-solid fa-link" style="margin-right: 4px;"></i> Cover URL
-                                </button>
-                            </div>
+                            <label for="settingsCoverFile" class="li-btn-secondary" style="position: absolute; right: 12px; bottom: 12px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); font-size: 12px; padding: 6px 14px; cursor: pointer; display: inline-flex; align-items: center;">
+                                <i class="fa-solid fa-camera" style="margin-right: 6px;"></i> Change Cover
+                            </label>
+                            <input type="file" id="settingsCoverFile" accept="image/*" class="visually-hidden-file-input" onchange="uploadSettingsCover(event)">
                         </div>
                     </div>
 
@@ -372,34 +361,6 @@
                 showToast(err.message || 'Upload failed', true);
             } finally {
                 event.target.value = '';
-            }
-        }
-
-        async function setAvatarByUrl() {
-            const url = prompt('Enter or paste direct image URL for your profile photo:');
-            if (!url || !url.trim()) return;
-            try {
-                showToast('Updating profile photo...');
-                await API.updateProfilePicture(url.trim());
-                document.getElementById('settingsAvatarPreview').src = url.trim();
-                showToast('Profile photo updated successfully!');
-            } catch (err) {
-                showToast(err.message || 'Failed to update photo', true);
-            }
-        }
-
-        async function setCoverByUrl() {
-            const url = prompt('Enter or paste direct image URL for your cover banner:');
-            if (!url || !url.trim()) return;
-            try {
-                showToast('Updating cover photo...');
-                await API.updateBackgroundPicture(url.trim());
-                const coverEl = document.getElementById('settingsCoverPreview');
-                coverEl.src = url.trim();
-                coverEl.style.display = 'block';
-                showToast('Cover photo updated successfully!');
-            } catch (err) {
-                showToast(err.message || 'Failed to update cover', true);
             }
         }
 
