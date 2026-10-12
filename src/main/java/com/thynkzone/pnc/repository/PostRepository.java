@@ -15,6 +15,10 @@ public interface PostRepository extends JpaRepository<Post, String> {
 
     Page<Post> findByAuthorIdOrderByCreatedAtDesc(String authorId, Pageable pageable);
 
+    List<Post> findByAuthorId(String authorId);
+
+    void deleteByAuthorId(String authorId);
+
     long countByAuthorId(String authorId);
 
     /**

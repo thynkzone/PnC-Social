@@ -33,4 +33,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     List<String> findHiddenAuthorIdsByActorId(@Param("actorId") String actorId);
 
     void deleteByActorIdAndType(String actorId, int type);
+
+    void deleteByTargetUserId(String targetUserId);
+
+    void deleteByActorId(String actorId);
+
+    void deleteByTargetPostId(String targetPostId);
 }

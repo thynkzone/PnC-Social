@@ -19,4 +19,6 @@ public interface AdvertisementRepository extends JpaRepository<Advertisement, Lo
     List<Advertisement> findActiveAdsForCountry(@Param("country") String country, Pageable pageable);
 
     long countByApproval(int approval);
+
+    void deleteByAdOwnerId(String adOwnerId);
 }

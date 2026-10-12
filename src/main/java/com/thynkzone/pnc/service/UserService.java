@@ -20,4 +20,6 @@ public interface UserService {
     List<UserProfileDto> getSuggestedUsers(String currentUserId, int limit);
 
     void reportUser(String targetUserId, String reporterId, int reportType);
+
+    void deleteUserAccount(String userId);
 }

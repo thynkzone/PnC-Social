@@ -12,4 +12,10 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     Page<Report> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
 
     long countByStatus(String status);
+
+    void deleteByPostId(String postId);
+
+    void deleteByReporterId(String reporterId);
+
+    void deleteByPosterId(String posterId);
 }

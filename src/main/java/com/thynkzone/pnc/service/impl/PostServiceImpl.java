@@ -105,9 +105,9 @@ public class PostServiceImpl implements PostService {
             throw new SecurityException("You are not authorized to delete this post.");
         }
 
-        // Clean up notifications and reactions related to post
-        List<Notification> notifs = notificationRepository.findByTargetPostIdAndTypeOrderByCreatedAtAsc(postId, 1);
-        notificationRepository.deleteAll(notifs);
+        // Clean up notifications and reports related to post
+        notificationRepository.deleteByTargetPostId(postId);
+        reportRepository.deleteByPostId(postId);
 
         postRepository.delete(post);
     }

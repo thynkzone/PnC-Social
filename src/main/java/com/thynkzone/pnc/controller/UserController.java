@@ -19,10 +19,12 @@ public class UserController {
 
     private final UserService userService;
     private final AuthService authService;
+    private final com.thynkzone.pnc.util.CookieHelper cookieHelper;
 
-    public UserController(UserService userService, AuthService authService) {
+    public UserController(UserService userService, AuthService authService, com.thynkzone.pnc.util.CookieHelper cookieHelper) {
         this.userService = userService;
         this.authService = authService;
+        this.cookieHelper = cookieHelper;
     }
 
     @GetMapping("/{userId}")
@@ -117,5 +119,19 @@ public class UserController {
         }
         userService.reportUser(userId, currentUserId, reportType);
         return ResponseEntity.ok(ApiResponse.ok("Thank you for your report. The profile has been submitted for moderation review.", null));
+    }
+
+    @DeleteMapping("/account")
+    public ResponseEntity<ApiResponse<Void>> deleteAccount(
+            HttpServletRequest request,
+            jakarta.servlet.http.HttpServletResponse response) {
+        String currentUserId = authService.getCurrentUserId(request);
+        if (currentUserId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Authentication required"));
+        }
+        userService.deleteUserAccount(currentUserId);
+        cookieHelper.clearSessionCookies(response);
+        return ResponseEntity.ok(ApiResponse.ok("Profile and account permanently deleted.", null));
     }
 }

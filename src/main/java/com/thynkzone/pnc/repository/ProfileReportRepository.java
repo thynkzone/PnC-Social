@@ -12,4 +12,8 @@ public interface ProfileReportRepository extends JpaRepository<ProfileReport, Lo
     Page<ProfileReport> findByStatusOrderByCreatedAtDesc(String status, Pageable pageable);
 
     long countByStatus(String status);
+
+    void deleteByReporterId(String reporterId);
+
+    void deleteByTargetUserId(String targetUserId);
 }

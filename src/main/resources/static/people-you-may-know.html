@@ -226,7 +226,7 @@
                 document.getElementById('menuAvatar').src = pic;
             }
             document.getElementById('menuName').innerText = user.fullName || 'User';
-            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} • ${user.rating || 0} pts`;
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} \u2022 ${user.rating || 0} pts`;
             document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
         }
 

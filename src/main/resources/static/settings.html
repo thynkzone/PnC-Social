@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
@@ -121,17 +121,17 @@
                     <div style="display: flex; gap: 18px; margin-bottom: 24px; align-items: center;">
                         <div style="position: relative; width: 84px; height: 84px;">
                             <img id="settingsAvatarPreview" src="/images/prof.png" style="width: 84px; height: 84px; border-radius: 50%; object-fit: cover; border: 2px solid var(--li-border);" alt="Avatar">
-                            <button type="button" onclick="document.getElementById('settingsAvatarFile').click()" style="position: absolute; right: 0; bottom: 0; background: var(--li-primary); color: #fff; border: 2px solid var(--li-bg-surface); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">
+                            <label for="settingsAvatarFile" style="position: absolute; right: 0; bottom: 0; background: var(--li-primary); color: #fff; border: 2px solid var(--li-bg-surface); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px;">
                                 <i class="fa-solid fa-camera"></i>
-                            </button>
-                            <input type="file" id="settingsAvatarFile" accept="image/*" style="display: none;" onchange="uploadSettingsAvatar(event)">
+                            </label>
+                            <input type="file" id="settingsAvatarFile" accept="image/*" class="visually-hidden-file-input" onchange="uploadSettingsAvatar(event)">
                         </div>
                         <div>
                             <div style="font-weight: 700; font-size: 14px; color: #fff;">Profile Photo</div>
                             <div style="font-size: 12px; color: var(--li-text-secondary); margin-bottom: 8px;">Direct Cloudflare R2 object storage</div>
-                            <button type="button" class="li-btn-secondary" style="font-size: 12px; padding: 5px 12px;" onclick="document.getElementById('settingsAvatarFile').click()">
+                            <label for="settingsAvatarFile" class="li-btn-secondary" style="font-size: 12px; padding: 5px 12px; cursor: pointer; display: inline-flex; align-items: center;">
                                 Change Photo
-                            </button>
+                            </label>
                         </div>
                     </div>
 
@@ -140,10 +140,10 @@
                         <div style="font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 8px;">Cover Background Banner</div>
                         <div style="position: relative; height: 130px; border-radius: var(--li-radius-md); overflow: hidden; border: 1px solid var(--li-border); background-color: #0a66c2;">
                             <img id="settingsCoverPreview" style="display: none; width: 100%; height: 100%; object-fit: cover;" alt="Cover">
-                            <button type="button" onclick="document.getElementById('settingsCoverFile').click()" class="li-btn-secondary" style="position: absolute; right: 12px; bottom: 12px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); font-size: 12px; padding: 6px 14px;">
-                                <i class="fa-solid fa-camera"></i> Change Cover
-                            </button>
-                            <input type="file" id="settingsCoverFile" accept="image/*" style="display: none;" onchange="uploadSettingsCover(event)">
+                            <label for="settingsCoverFile" class="li-btn-secondary" style="position: absolute; right: 12px; bottom: 12px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); font-size: 12px; padding: 6px 14px; cursor: pointer; display: inline-flex; align-items: center;">
+                                <i class="fa-solid fa-camera" style="margin-right: 6px;"></i> Change Cover
+                            </label>
+                            <input type="file" id="settingsCoverFile" accept="image/*" class="visually-hidden-file-input" onchange="uploadSettingsCover(event)">
                         </div>
                     </div>
 
@@ -192,6 +192,53 @@
             </button>
         </div>
 
+        <!-- Danger Zone: Delete Profile Card -->
+        <div class="li-card" style="padding: 24px; border: 1px solid rgba(224, 36, 94, 0.4); background: rgba(224, 36, 94, 0.05); margin-top: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                <div>
+                    <h3 style="font-size: 15px; font-weight: 700; color: #ff5c7c; margin-bottom: 4px;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Delete Profile &amp; Account
+                    </h3>
+                    <p style="font-size: 12.5px; color: var(--li-text-secondary); margin: 0; max-width: 520px;">
+                        Permanently delete your profile, posts, connections, and personal data from P&amp;C Social. This operation cannot be reversed.
+                    </p>
+                </div>
+                <button type="button" class="li-btn-danger" style="background: #e0245e; color: #fff; border: none; font-size: 13px; font-weight: 600; padding: 8px 20px; border-radius: var(--li-radius-md); cursor: pointer;" onclick="openDeleteAccountModal()">
+                    <i class="fa-regular fa-trash-can"></i> Delete Profile
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div class="li-modal-overlay" id="deleteAccountModal" onclick="if(event.target===this) closeDeleteAccountModal()">
+        <div class="li-modal-card" style="max-width: 440px;">
+            <div class="li-modal-header">
+                <h3 class="li-modal-title" style="color: #ff5c7c;">
+                    <i class="fa-solid fa-triangle-exclamation" style="margin-right: 8px;"></i> Delete Profile
+                </h3>
+                <button type="button" class="li-modal-close-btn" onclick="closeDeleteAccountModal()">&times;</button>
+            </div>
+            <div class="li-modal-body">
+                <p style="font-size: 13.5px; color: #e4e6eb; line-height: 1.5; margin-bottom: 12px;">
+                    Are you absolutely sure you want to permanently delete your P&amp;C account and profile?
+                </p>
+                <div style="background: rgba(224, 36, 94, 0.1); border-left: 3px solid #e0245e; padding: 10px 14px; border-radius: var(--li-radius-sm); font-size: 12.5px; color: #ff9cb0; margin-bottom: 16px;">
+                    This will permanently erase all your published workplace updates, co-worker relationships, and profile history.
+                </div>
+                <p style="font-size: 12px; color: var(--li-text-secondary); margin: 0;">
+                    Type <strong>DELETE</strong> below to confirm:
+                </p>
+                <input type="text" id="confirmDeleteInput" class="li-input" placeholder="Type DELETE" style="margin-top: 8px;">
+            </div>
+            <div class="li-modal-footer">
+                <button type="button" class="li-btn-secondary" onclick="closeDeleteAccountModal()">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="li-btn-danger" style="background: #e0245e; color: #fff; border: none; padding: 8px 18px; border-radius: var(--li-radius-md); font-weight: 600; cursor: pointer;" onclick="confirmDeleteAccount()">
+                    Permanently Delete
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="/js/api.js?v=20261012.4"></script>
@@ -236,7 +283,7 @@
                 document.getElementById('menuAvatar').src = pic;
             }
             document.getElementById('menuName').innerText = user.fullName || 'User';
-            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} â€¢ ${user.rating || 0} pts`;
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} \u2022 ${user.rating || 0} pts`;
             document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
         }
 
@@ -340,6 +387,37 @@
                 window.location.href = '/login.html';
             } catch (err) {
                 window.location.href = '/login.html';
+            }
+        }
+
+        function openDeleteAccountModal() {
+            document.getElementById('confirmDeleteInput').value = '';
+            document.getElementById('deleteAccountModal').classList.add('show');
+        }
+
+        function closeDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.remove('show');
+        }
+
+        async function confirmDeleteAccount() {
+            const input = document.getElementById('confirmDeleteInput').value.trim();
+            if (input !== 'DELETE') {
+                showToast('Please type DELETE to confirm.', true);
+                return;
+            }
+            const btn = document.getElementById('confirmDeleteBtn');
+            btn.disabled = true;
+            btn.innerText = 'Deleting...';
+            try {
+                await API.deleteAccount();
+                showToast('Your account and profile have been permanently deleted.');
+                setTimeout(() => {
+                    window.location.href = '/signup.html';
+                }, 1200);
+            } catch (err) {
+                showToast(err.message || 'Failed to delete account.', true);
+                btn.disabled = false;
+                btn.innerText = 'Permanently Delete';
             }
         }
     </script>

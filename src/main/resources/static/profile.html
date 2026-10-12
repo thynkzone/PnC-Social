@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
@@ -296,20 +296,20 @@
             <!-- Cover Photo (Solid Blue by default) -->
             <div class="cover-photo-wrap" style="background-color: #0a66c2;">
                 <img id="coverImg" class="cover-photo-img" style="display: none;" alt="Cover photo">
-                <button id="coverUploadBtn" type="button" class="cover-edit-btn" onclick="document.getElementById('coverFileInput').click()">
+                <label id="coverUploadBtn" for="coverFileInput" class="cover-edit-btn" style="cursor: pointer; display: none;">
                     <i class="fa-solid fa-camera"></i> Change cover
-                </button>
-                <input type="file" id="coverFileInput" accept="image/*" style="display: none;" onchange="handleCoverUpload(event)">
+                </label>
+                <input type="file" id="coverFileInput" accept="image/*" class="visually-hidden-file-input" onchange="handleCoverUpload(event)">
             </div>
 
             <!-- Avatar & Action Buttons Bar -->
             <div style="display: flex; justify-content: space-between; align-items: flex-end; padding: 0 24px; position: relative;">
                 <div class="avatar-edit-wrap">
                     <img id="profileAvatar" class="avatar-img-main" src="/images/prof.png" alt="Profile avatar">
-                    <button id="avatarUploadBtn" type="button" class="avatar-edit-btn" onclick="document.getElementById('avatarFileInput').click()">
+                    <label id="avatarUploadBtn" for="avatarFileInput" class="avatar-edit-btn" style="cursor: pointer; display: none;">
                         <i class="fa-solid fa-camera"></i>
-                    </button>
-                    <input type="file" id="avatarFileInput" accept="image/*" style="display: none;" onchange="handleAvatarUpload(event)">
+                    </label>
+                    <input type="file" id="avatarFileInput" accept="image/*" class="visually-hidden-file-input" onchange="handleAvatarUpload(event)">
                 </div>
 
                 <div id="actionButtons" style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;"></div>
@@ -405,7 +405,7 @@
                 document.getElementById('menuAvatar').src = pic;
             }
             document.getElementById('menuName').innerText = user.fullName || 'User';
-            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} â€¢ ${user.rating || 0} pts`;
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} \u2022 ${user.rating || 0} pts`;
             document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
         }
 
@@ -434,7 +434,7 @@
                 const p = res.data;
 
                 document.getElementById('profileName').innerText = p.fullName || 'User';
-                document.getElementById('profileRank').innerText = `${p.rank || 'Novice'} â€¢ ${p.rating || 0} Points`;
+                document.getElementById('profileRank').innerText = `${p.rank || 'Novice'} \u2022 ${p.rating || 0} Points`;
                 document.getElementById('profileAbout').innerText = p.about || 'No bio specified yet.';
                 document.getElementById('profilePlace').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${p.place || 'Remote'}`;
                 document.getElementById('profileCountry').innerHTML = `<i class="fa-solid fa-globe"></i> ${p.country || 'Global'}`;
@@ -527,7 +527,7 @@
                     const item = document.createElement('div');
                     item.className = 'activity-item';
                     item.id = `post-${post.id}`;
-                    const isOwner = Boolean(currentAuthUser && currentAuthUser.id === post.authorId);
+                    const isOwner = Boolean((currentAuthUser && currentAuthUser.id === post.authorId) || post.isOwner || post.owner);
                     const badgeText = post.postType === 1 ? 'Meme' : (post.postType === 2 ? 'Fact' : 'Update');
 
                     item.innerHTML = `
@@ -537,19 +537,19 @@
                                 <span class="li-badge-pill" id="post-badge-${post.id}" style="margin-left: 6px;">${badgeText}</span>
                             </div>
                             <div class="li-post-menu-container">
-                                <button class="li-post-menu-btn" onclick="togglePostMenu('${post.id}', event)" title="Options">
-                                    <i class="fa-solid fa-ellipsis"></i>
+                                <button type="button" class="li-post-menu-btn" onclick="togglePostMenu('${post.id}', event)" aria-label="Post options" title="Options">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
                                 </button>
                                 <div class="li-post-menu-dropdown" id="post-menu-${post.id}">
                                     ${isOwner ? `
-                                        <button onclick="openEditPostModal('${post.id}', event)">
+                                        <button type="button" onclick="openEditPostModal('${post.id}', event)">
                                             <i class="fa-regular fa-pen-to-square" style="color: var(--li-primary);"></i> Edit post
                                         </button>
-                                        <button onclick="deletePost('${post.id}')" style="color: var(--li-danger);">
+                                        <button type="button" onclick="deletePost('${post.id}', event)" style="color: var(--li-danger);">
                                             <i class="fa-regular fa-trash-can"></i> Delete post
                                         </button>
                                     ` : `
-                                        <button onclick="openReportPostModal('${post.id}', event)">
+                                        <button type="button" onclick="openReportPostModal('${post.id}', event)">
                                             <i class="fa-regular fa-flag" style="color: #f59e0b;"></i> Report post
                                         </button>
                                     `}
@@ -727,16 +727,24 @@
         }
 
         function togglePostMenu(postId, e) {
-            if (e) e.stopPropagation();
-            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => {
-                if (m.id !== `post-menu-${postId}`) m.classList.remove('show');
-            });
-            const menu = document.getElementById(`post-menu-${postId}`);
-            if (menu) menu.classList.toggle('show');
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            const targetMenu = document.getElementById(`post-menu-${postId}`);
+            const isAlreadyOpen = targetMenu && targetMenu.classList.contains('show');
+
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+
+            if (targetMenu && !isAlreadyOpen) {
+                targetMenu.classList.add('show');
+            }
         }
 
-        document.addEventListener('click', () => {
-            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.li-post-menu-container')) {
+                document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
+            }
         });
 
         let editPostCurrentImageUrl = null;
@@ -835,14 +843,30 @@
             }
         }
 
-        async function deletePost(postId) {
+        async function deletePost(postId, e) {
+            if (e) e.stopPropagation();
+            document.querySelectorAll('.li-post-menu-dropdown').forEach(m => m.classList.remove('show'));
             if (!confirm('Are you sure you want to delete this post?')) return;
             try {
                 await API.deletePost(postId);
                 document.getElementById(`post-${postId}`)?.remove();
-                showToast('Post removed.');
+                showToast('Post deleted successfully.');
             } catch (err) {
-                showToast(err.message, true);
+                showToast(err.message || 'Failed to delete post.', true);
+            }
+        }
+
+        async function deleteCurrentEditingPost() {
+            const postId = document.getElementById('editPostId').value;
+            if (!postId) return;
+            if (!confirm('Are you sure you want to permanently delete this post?')) return;
+            try {
+                await API.deletePost(postId);
+                closeEditPostModal();
+                document.getElementById(`post-${postId}`)?.remove();
+                showToast('Post deleted successfully.');
+            } catch (err) {
+                showToast(err.message || 'Failed to delete post.', true);
             }
         }
 
@@ -930,16 +954,16 @@
                     <div>
                         <div id="editPostAuthorName" style="font-weight: 700; font-size: 14px; color: #fff;">User</div>
                         <div style="display: flex; gap: 8px; margin-top: 4px;">
-                            <select id="editPostTypeSelect" class="li-select" style="padding: 3px 8px; font-size: 11px;">
-                                <option value="3">ðŸ¢ Workplace Update</option>
-                                <option value="2">ðŸ’¡ Architectural Fact</option>
-                                <option value="1">ðŸ˜„ Tech Meme</option>
+                                                        <select id="editPostTypeSelect" class="li-select" style="padding: 3px 8px; font-size: 11px;">
+                                <option value="3">&#127970; Workplace Update</option>
+                                <option value="2">&#128161; Architectural Fact</option>
+                                <option value="1">&#128516; Tech Meme</option>
                             </select>
                             <select id="editPostPrivacySelect" class="li-select" style="padding: 3px 8px; font-size: 11px;">
-                                <option value="4">ðŸŒ Anyone (Public)</option>
-                                <option value="3">ðŸ‘¥ Co-workers &amp; Followers</option>
-                                <option value="2">ðŸ”’ Co-workers Only</option>
-                                <option value="1">ðŸ‘ï¸ Only Me</option>
+                                <option value="4">&#127760; Anyone (Public)</option>
+                                <option value="3">&#128101; Co-workers &amp; Followers</option>
+                                <option value="2">&#128274; Co-workers Only</option>
+                                <option value="1">&#128065;&#65039; Only Me</option>
                             </select>
                         </div>
                     </div>
@@ -952,9 +976,14 @@
                     <button type="button" onclick="removeEditPostImage()" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.8); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; font-size: 14px;">&times;</button>
                 </div>
             </div>
-            <div class="li-modal-footer">
-                <button type="button" class="li-btn-secondary" onclick="closeEditPostModal()">Cancel</button>
-                <button type="button" class="li-btn-primary" id="savePostEditBtn" onclick="savePostEdit()">Save changes</button>
+            <div class="li-modal-footer" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <button type="button" onclick="deleteCurrentEditingPost()" style="background: rgba(224, 36, 94, 0.15); color: #ff5c7c; border: 1px solid rgba(224, 36, 94, 0.4); padding: 8px 16px; border-radius: var(--li-radius-md); font-size: 13px; font-weight: 600; cursor: pointer;">
+                    <i class="fa-regular fa-trash-can"></i> Delete Post
+                </button>
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" class="li-btn-secondary" onclick="closeEditPostModal()">Cancel</button>
+                    <button type="button" class="li-btn-primary" id="savePostEditBtn" onclick="savePostEdit()">Save changes</button>
+                </div>
             </div>
         </div>
     </div>

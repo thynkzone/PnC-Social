@@ -418,6 +418,10 @@ const API = {
         return this.put('/users/background-picture', { imageUrl });
     },
 
+    deleteAccount() {
+        return this.delete('/users/account');
+    },
+
     // Storage & Cloudflare R2 Uploads (Dual-path: Backend upload + Presigned direct PUT)
     async uploadImage(file, folder = 'posts') {
         if (!file) throw new Error('No file provided for upload.');
@@ -561,6 +565,7 @@ if (typeof window !== 'undefined') {
 
             if (isAndroid || isWebView || isMobile) {
                 document.documentElement.classList.add('mobile-app-view');
+                if (document.body) document.body.classList.add('mobile-app-view');
                 document.documentElement.style.setProperty('--app-status-bar', '36px');
             }
         } catch (_) {}

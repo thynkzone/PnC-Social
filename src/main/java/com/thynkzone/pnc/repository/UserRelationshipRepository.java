@@ -30,6 +30,10 @@ public interface UserRelationshipRepository extends JpaRepository<UserRelationsh
 
     void deleteByUserIdAndTargetUserId(String userId, String targetUserId);
 
+    void deleteByUserId(String userId);
+
+    void deleteByTargetUserId(String targetUserId);
+
     @Query("SELECT r.targetUserId FROM UserRelationship r WHERE r.userId = :userId AND r.relationshipType = :type")
     List<String> findTargetUserIdsByUserIdAndType(@Param("userId") String userId, @Param("type") int type);
 

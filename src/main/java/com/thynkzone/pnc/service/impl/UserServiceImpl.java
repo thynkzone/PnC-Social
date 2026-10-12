@@ -14,6 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.thynkzone.pnc.entity.Post;
+import com.thynkzone.pnc.repository.AdvertisementRepository;
+import com.thynkzone.pnc.repository.NotificationRepository;
+import com.thynkzone.pnc.repository.ReportRepository;
+import com.thynkzone.pnc.repository.UserRepository;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -21,15 +27,27 @@ public class UserServiceImpl implements UserService {
     private final UserRelationshipRepository relationshipRepository;
     private final PostRepository postRepository;
     private final com.thynkzone.pnc.repository.ProfileReportRepository profileReportRepository;
+    private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final ReportRepository reportRepository;
+    private final AdvertisementRepository advertisementRepository;
 
     public UserServiceImpl(UserProfileRepository userProfileRepository,
                            UserRelationshipRepository relationshipRepository,
                            PostRepository postRepository,
-                           com.thynkzone.pnc.repository.ProfileReportRepository profileReportRepository) {
+                           com.thynkzone.pnc.repository.ProfileReportRepository profileReportRepository,
+                           UserRepository userRepository,
+                           NotificationRepository notificationRepository,
+                           ReportRepository reportRepository,
+                           AdvertisementRepository advertisementRepository) {
         this.userProfileRepository = userProfileRepository;
         this.relationshipRepository = relationshipRepository;
         this.postRepository = postRepository;
         this.profileReportRepository = profileReportRepository;
+        this.userRepository = userRepository;
+        this.notificationRepository = notificationRepository;
+        this.reportRepository = reportRepository;
+        this.advertisementRepository = advertisementRepository;
     }
 
     @Override
@@ -174,5 +192,40 @@ public class UserServiceImpl implements UserService {
         String reporterName = reporter != null ? reporter.getFullName() : "Anonymous User";
         com.thynkzone.pnc.entity.ProfileReport report = new com.thynkzone.pnc.entity.ProfileReport(reporterId, reporterName, targetUserId, reportType);
         profileReportRepository.save(report);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserAccount(String userId) {
+        // 1. Delete all posts by this user and associated post data
+        List<Post> posts = postRepository.findByAuthorId(userId);
+        for (Post p : posts) {
+            notificationRepository.deleteByTargetPostId(p.getId());
+            reportRepository.deleteByPostId(p.getId());
+        }
+        postRepository.deleteByAuthorId(userId);
+
+        // 2. Delete all notifications where user is actor or target
+        notificationRepository.deleteByTargetUserId(userId);
+        notificationRepository.deleteByActorId(userId);
+
+        // 3. Delete all user relationships
+        relationshipRepository.deleteByUserId(userId);
+        relationshipRepository.deleteByTargetUserId(userId);
+
+        // 4. Delete reports submitted by or filed against user
+        reportRepository.deleteByReporterId(userId);
+        reportRepository.deleteByPosterId(userId);
+        profileReportRepository.deleteByReporterId(userId);
+        profileReportRepository.deleteByTargetUserId(userId);
+
+        // 5. Delete advertisements
+        advertisementRepository.deleteByAdOwnerId(userId);
+
+        // 6. Delete user profile
+        userProfileRepository.deleteById(userId);
+
+        // 7. Delete user authentication record
+        userRepository.deleteById(userId);
     }
 }

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="icon" href="/icon/favicon.ico" type="image/x-icon">
@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#1d2226">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/modern-ui.css?v=20261012.4">
+    <link rel="stylesheet" href="/css/modern-ui.css">
     <style>
         .ads-container {
             max-width: 840px;
@@ -140,10 +140,10 @@
                 <div class="li-form-group">
                     <label class="li-label">Banner Image</label>
                     <div style="display: flex; gap: 12px; align-items: center;">
-                        <input type="file" id="adImageFile" accept="image/*" style="display: none;" onchange="handleAdImageSelect(event)">
-                        <button type="button" class="li-btn-secondary" onclick="document.getElementById('adImageFile').click()">
-                            <i class="fa-solid fa-image"></i> Select Image
-                        </button>
+                        <input type="file" id="adImageFile" accept="image/*" class="visually-hidden-file-input" onchange="handleAdImageSelect(event)">
+                        <label for="adImageFile" class="li-btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center;">
+                            <i class="fa-solid fa-image" style="margin-right: 6px;"></i> Select Image
+                        </label>
                         <span id="adFileName" style="color: var(--li-text-secondary); font-size: 13px;">No file chosen</span>
                     </div>
                     <img id="adImagePreview" style="display: none; max-height: 140px; border-radius: var(--li-radius-sm); margin-top: 12px; object-fit: cover; border: 1px solid var(--li-border);">
@@ -185,7 +185,7 @@
 
     </div>
 
-    <script src="/js/api.js?v=20261012.4"></script>
+    <script src="/js/api.js?v=2.2"></script>
     <script>
         let selectedAdImageFile = null;
 
@@ -210,7 +210,7 @@
                 document.getElementById('menuAvatar').src = pic;
             }
             document.getElementById('menuName').innerText = user.fullName || 'User';
-            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} â€¢ ${user.rating || 0} pts`;
+            document.getElementById('menuHeadline').innerText = `${user.rank || 'Member'} \u2022 ${user.rating || 0} pts`;
             document.getElementById('menuProfileLink').href = `/profile.html?userId=${user.id}`;
         }
 
@@ -272,30 +272,6 @@
             preview.style.display = 'block';
         }
 
-        async function safeUploadImage(file, folder) {
-            if (window.API && typeof window.API.uploadImage === 'function') {
-                return await window.API.uploadImage(file, folder);
-            }
-            if (typeof window.uploadImage === 'function') {
-                return await window.uploadImage(file, folder);
-            }
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('folder', folder);
-            const res = await fetch('/api/storage/upload', {
-                method: 'POST',
-                body: formData,
-                credentials: 'include'
-            });
-            if (res.ok) {
-                const data = await res.json();
-                if (data && data.success && data.data) {
-                    return data.data;
-                }
-            }
-            throw new Error('Image upload failed. Please refresh the page.');
-        }
-
         async function handleCreateAd(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('submitAdBtn');
@@ -305,8 +281,8 @@
             try {
                 let picUrl = '';
                 if (selectedAdImageFile) {
-                    const uploadResult = await safeUploadImage(selectedAdImageFile, 'ads');
-                    picUrl = uploadResult ? (uploadResult.publicUrl || uploadResult.downloadUrl) : '';
+                    const uploadResult = await API.uploadImage(selectedAdImageFile, 'ads');
+                    picUrl = uploadResult.publicUrl || uploadResult.downloadUrl;
                 }
 
                 const payload = {
