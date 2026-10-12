@@ -502,11 +502,14 @@
                 </div>
 
                 <div class="li-composer-actions">
-                    <div style="display: flex; gap: 4px;">
-                        <input type="file" id="postImageFileInput" accept="image/*" class="visually-hidden-file-input" onchange="handlePostImageSelect(event)">
-                        <label for="postImageFileInput" class="li-action-pill-btn" onclick="expandComposer()" style="cursor: pointer; display: inline-flex; align-items: center;">
+                    <div style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
+                        <label class="li-action-pill-btn" style="cursor: pointer; display: inline-flex; align-items: center; position: relative; overflow: hidden;">
+                            <input type="file" id="postImageFileInput" accept="image/*" class="visually-hidden-file-input" onchange="handlePostImageSelect(event)">
                             <i class="fa-regular fa-image" style="color: #378fe9; font-size: 16px;"></i> Media
                         </label>
+                        <button type="button" class="li-action-pill-btn" onclick="openImageUrlModal()">
+                            <i class="fa-solid fa-link" style="color: #00b4d8; font-size: 14px;"></i> URL
+                        </button>
                         <button type="button" class="li-action-pill-btn" onclick="expandComposer(); document.getElementById('postTypeSelect').value='3';">
                             <i class="fa-solid fa-briefcase" style="color: #e7a33e; font-size: 16px;"></i> Update
                         </button>
@@ -674,10 +677,13 @@
             document.getElementById('postContentInput').focus();
         }
 
+        let customImageUrl = null;
+
         function handlePostImageSelect(e) {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
             selectedPostImage = file;
+            customImageUrl = null;
             const reader = new FileReader();
             reader.onload = function(evt) {
                 document.getElementById('postImagePreview').src = evt.target.result;
@@ -689,8 +695,34 @@
 
         function clearPostImage() {
             selectedPostImage = null;
-            document.getElementById('postImageFileInput').value = '';
+            customImageUrl = null;
+            const fileInput = document.getElementById('postImageFileInput');
+            if (fileInput) fileInput.value = '';
             document.getElementById('postImagePreviewBox').style.display = 'none';
+        }
+
+        function openImageUrlModal() {
+            document.getElementById('customImageUrlInput').value = customImageUrl || '';
+            document.getElementById('imageUrlModal').classList.add('show');
+        }
+
+        function closeImageUrlModal() {
+            document.getElementById('imageUrlModal').classList.remove('show');
+        }
+
+        function applyCustomImageUrl() {
+            const url = document.getElementById('customImageUrlInput').value.trim();
+            if (!url) {
+                showToast('Please enter a valid image URL', true);
+                return;
+            }
+            customImageUrl = url;
+            selectedPostImage = null;
+            document.getElementById('postImagePreview').src = customImageUrl;
+            document.getElementById('postImagePreviewBox').style.display = 'block';
+            closeImageUrlModal();
+            expandComposer();
+            showToast('Image URL attached!');
         }
 
         async function safeUploadImage(file, folder) {
@@ -724,7 +756,7 @@
             const privacy = parseInt(document.getElementById('postPrivacySelect').value) || 4;
             const btn = document.getElementById('publishPostBtn');
 
-            if (!content && !selectedPostImage) {
+            if (!content && !selectedPostImage && !customImageUrl) {
                 showToast('Please write some content or attach an image.', true);
                 return;
             }
@@ -733,7 +765,7 @@
             btn.innerText = 'Posting...';
 
             try {
-                let uploadedImageUrl = null;
+                let uploadedImageUrl = customImageUrl || null;
                 if (selectedPostImage) {
                     showToast('Uploading image...');
                     const uploadRes = await safeUploadImage(selectedPostImage, 'posts');
@@ -1387,6 +1419,26 @@
             <div class="li-modal-footer">
                 <button type="button" class="li-btn-secondary" onclick="closeReportPostModal()">Cancel</button>
                 <button type="button" class="li-btn-primary" id="submitPostReportBtn" onclick="submitPostReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image URL Modal (Guaranteed mobile & WebView fallback) -->
+    <div class="li-modal-overlay" id="imageUrlModal" onclick="if(event.target===this) closeImageUrlModal()">
+        <div class="li-modal-card" style="max-width: 440px;">
+            <div class="li-modal-header">
+                <h3 class="li-modal-title"><i class="fa-solid fa-link" style="color: var(--li-primary); margin-right: 6px;"></i> Attach Image by URL</h3>
+                <button type="button" class="li-modal-close-btn" onclick="closeImageUrlModal()">&times;</button>
+            </div>
+            <div class="li-modal-body">
+                <p style="font-size: 13px; color: var(--li-text-secondary); margin-bottom: 12px;">
+                    Paste any public image link (from the web, Imgur, Cloudinary, Discord, etc.):
+                </p>
+                <input type="url" id="customImageUrlInput" class="li-input" placeholder="https://example.com/image.jpg" style="width: 100%;">
+            </div>
+            <div class="li-modal-footer">
+                <button type="button" class="li-btn-secondary" onclick="closeImageUrlModal()">Cancel</button>
+                <button type="button" class="li-btn-primary" onclick="applyCustomImageUrl()">Attach Image</button>
             </div>
         </div>
     </div>
